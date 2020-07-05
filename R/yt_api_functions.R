@@ -36,10 +36,11 @@ get_typical_yt  <- function(){
 #' ---------
 #' set_query
 #' ---------
+#' sets query portion of POST
 #'
 #' @return list
 #' @export
-set_query <- function(part,maxResults,mine,fields,key, ...) {
+set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
 	query <- list(part = part,
 								maxResults = maxResults, 
 								mine = mine,
