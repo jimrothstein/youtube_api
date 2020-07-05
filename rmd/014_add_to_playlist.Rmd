@@ -1,4 +1,3 @@
-
 ---
 title: "pkg_yt_api/rmd/014_add_to_playlist.Rmd"
 output: 
@@ -90,7 +89,6 @@ Begin:
 ```{r begin}
 query  <- yt::set_query(part="snippet",
                 key=api$api_key)
-
 config  <- set_config(google_token)
 
 # Set Body
