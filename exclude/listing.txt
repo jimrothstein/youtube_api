@@ -1,0 +1,12 @@
+total 52
+drwxrwxr-x. 2 jim jim 4096 Mar 31 13:41 .
+drwxrwxr-x. 7 jim jim 4096 Mar 31 00:42 ..
+-rw-rw-r--. 1 jim jim 5138 Mar  7 22:57 001_try_tuber_youtube_api.R
+-rw-rw-r--. 1 jim jim  652 Mar 14 21:35 003_retrieve_one_video.R
+-rw-rw-r--. 1 jim jim 2594 Mar 23 22:16 009_comments.R
+-rw-rw-r--. 1 jim jim  769 Mar 31 13:35 010_playlists_count.R
+-rw-rw-r--. 1 jim jim 4627 Mar 31 01:16 011_playlists.R
+-rw-rw-r--. 1 jim jim 2190 Mar 23 22:16 012_playlistitems.R
+-rw-rw-r--. 1 jim jim   12 Feb 26 01:04 .gitignore
+-rw-------. 1 jim jim 4952 Mar 25 23:24 .httr-oauth
+-rw-rw-r--. 1 jim jim    0 Mar 31 13:41 listing.txt
