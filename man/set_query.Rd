@@ -4,9 +4,10 @@
 \alias{set_query}
 \title{---------
 set_query
----------}
+---------
+sets query portion of POST}
 \usage{
-set_query(part, maxResults, mine, fields, key, ...)
+set_query(part, maxResults = 50, mine = NULL, fields = NULL, key, ...)
 }
 \value{
 list
@@ -15,4 +16,5 @@ list
 ---------
 set_query
 ---------
+sets query portion of POST
 }
