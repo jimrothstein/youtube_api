@@ -1,0 +1,123 @@
+
+---
+title: "pkg_yt_api/rmd/014_add_to_playlist.Rmd"
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE} 
+here()
+```
+
+
+Basis for Query:  a query portion, and several headers
+```{r}
+# curl --request POST \
+#   'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&key=[YOUR_API_KEY]' \
+#   --header 'Authorization: Bearer [YOUR_ACCESS_TOKEN]' \
+#   --header 'Accept: application/json' \
+#   --header 'Content-Type: application/json' \
+#   --data '{"snippet":{"playlistId":"YOUR_PLAYLIST_ID","position":0,"resourceId":{"kind":"youtube#video","videoId":"M7FIvfx5J10"}}}' \
+#   --compressed
+# 
+```
+
+```{r initialize_for_api}
+load_all()
+
+api  <- get_api_codes()
+myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
+													app_secret = api$oauth2_secret)
+
+base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
+
+google_token = base::getOption("google_token") 
+config  <- set_config(google_token)
+
+## current download
+##
+# https://www.youtube.com/playlist?list=PLbcglKxZP5PPLN00WGVqDMthLfML3G6hW
+playlistId  <- "PLbcglKxZP5PPLN00WGVqDMthLfML3G6hW"
+##
+```
+
+
+function: set_body 
+```{r set_body}
+set_body  <- function(v_id, p_id){
+	# 
+	glue::glue(.open= "<"  ,
+						 .close= ">" ,
+						 '{"snippet":{"playlistId":"<p_id>","position":0,"resourceId":{"kind":"youtube#video","videoId":"<v_id>"}}}'
+	) 
+}
+```
+
+Query
+```{r query}
+
+# =================
+# 002_setup call
+# ================
+query  <- set_query(part="snippet",
+                key=api$api_key)
+
+config  <- set_config(google_token)
+```
+
+Set Body
+```{r body}
+p_id  <- playlistId
+v_id   <- "M7FIv"
+set_body(v_id, p_id)
+
+```
+```{r add_video}
+
+# ===========
+# ADD VIDEO
+# ===========
+
+add_video  <- function(url, query, body, config) {
+
+r <- httr::POST(url=base_url, 
+								query =  query,
+								body = body,
+								encode="json",
+								config = config
+								)
+}
+add_video()
+httr::content(r)
+```
+
+
+
+
+Render
+```{r render, eval=FALSE, echo=FALSE	}
+p  <- fs::path()
+w  <- fs::path_wd()
+w
+file=""
+dir=""
+
+ren_pdf(file,dir)
+ren_github(file, dir)
+
+#knitr::knit_exit()
+```
