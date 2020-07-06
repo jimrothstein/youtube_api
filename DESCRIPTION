@@ -1,12 +1,12 @@
 Package: yt 
 Type: Package
 Title: R functions to use Google Youtube API 
-Version: 0.1.0
+Version: 0.0.0.9001
 Author: jim
-Maintainer: The package maintainer <yourself@somewhere.net>
+Maintainer: The package maintainer <jimrothstein@gmail.com>
 Description: various utilities to (a) clean up mp3 files 
     (b) download playlists, list of videos via Google API.
-    Does NOT download anyfiles.
+    Does NOT download actual mp3 files.
     Use youtube-dl at command line.
 License: MIT + file LICENSE
 Encoding: UTF-8

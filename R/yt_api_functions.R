@@ -9,6 +9,11 @@
 #' ---------
 #' sets query portion of POST
 #'
+#' @param part
+#' @param maxResults 
+#' @param mine
+#' @param fields
+#' @param key
 #' @return list
 #' @export
 set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
@@ -24,7 +29,7 @@ set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
 #' ---------
 #' set_config
 #' ---------
-#'
+#' @param token
 #' @return 
 #' @export
 
@@ -38,6 +43,7 @@ set_config <- function(token) {
 #' function get_json
 #' -----------------
 #'
+#' @param r
 #' @return json_content
 #' @export
 #'
@@ -51,6 +57,7 @@ get_json <- function(r) {
 #' function nextPageToken
 #' ----------------
 #'
+#' @param r
 #' @return 
 #' @export
 #'
@@ -62,10 +69,13 @@ get_nextPageToken <- function(r) {
 #' get_batch_videos
 #' ---------
 #'
+#' @param base_url
+#' @param query
+#' @param config
 #' @return
 #' @export
 
-get_batch_videos  <- function(url,query,config) {
+get_batch_videos  <- function(base_url,query,config) {
 			# get a block (upto maxResults)
 			r <- httr::GET(url = base_url, 
 											query= query, 

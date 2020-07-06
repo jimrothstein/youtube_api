@@ -9,6 +9,9 @@ sets query portion of POST}
 \usage{
 set_query(part, maxResults = 50, mine = NULL, fields = NULL, key, ...)
 }
+\arguments{
+\item{maxResults}{}
+}
 \value{
 list
 }

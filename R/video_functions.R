@@ -1,15 +1,19 @@
 #' helper functions to add video to playlist
-
-#' ===========
-#' set_body
-#' ===========
-
+#'
+#'
 #' helper function: set_body 
 #' prepare data portion of query to yt
-
-#' @return
+#'
+#' @section  Section 1.
+#' 
+#' @section  Section 2.
+#' 
+#' @seealso 
+#'
+#' @param video_id  The youtube assigned id.
+#'	@param playlist_id	The youtube assigned playlist id.
+#' @return The body portion (header) of the call to the API.
 #' @export 
-
 set_body  <- function(video_id, playlist_id){
 	# 
 	glue::glue(.open= "<"  ,
@@ -19,10 +23,11 @@ set_body  <- function(video_id, playlist_id){
 }
 
 
-#' ============
-#' add_video
-#' ============
+#' add_video Add video to specific playlist_id
+#' 
+#' 
 
+#' @param url Google specific url for this type of api call.
 #' @return
 #' @export
 

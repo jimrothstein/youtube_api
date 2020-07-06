@@ -2,23 +2,30 @@
 % Please edit documentation in R/video_functions.R
 \name{set_body}
 \alias{set_body}
-\title{helper functions to add video to playlist
-===========
-set_body
-===========
-helper function: set_body 
-prepare data portion of query to yt}
+\title{helper functions to add video to playlist}
 \usage{
 set_body(video_id, playlist_id)
 }
-\value{
+\arguments{
+\item{video_id}{The youtube assigned id.}
 
+\item{playlist_id}{The youtube assigned playlist id.}
+}
+\value{
+The body portion (header) of the call to the API.
 }
 \description{
-helper functions to add video to playlist
-===========
-set_body
-===========
 helper function: set_body 
 prepare data portion of query to yt
+}
+\section{Section 1.}{
+NA
+}
+
+\section{Section 2.}{
+NA
+}
+
+\seealso{
+
 }

@@ -42,7 +42,7 @@ myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 google_token = base::getOption("google_token") 
 
 # set httr (cookies, headers ...)
-config  <-yt::set_config(google_token)
+config  <-set_config(google_token)
 ```
 
 ```{r initialize_specifics}
@@ -87,7 +87,7 @@ r <- httr::POST(url=base_url,
 
 Begin:  
 ```{r begin}
-query  <- yt::set_query(part="snippet",
+query  <- set_query(part="snippet",
                 key=api$api_key)
 config  <- set_config(google_token)
 

@@ -6,7 +6,7 @@
 get_batch_videos
 ---------}
 \usage{
-get_batch_videos(url, query, config)
+get_batch_videos(base_url, query, config)
 }
 \value{
 
