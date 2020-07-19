@@ -8,6 +8,9 @@ function nextPageToken
 \usage{
 get_nextPageToken(r)
 }
+\arguments{
+\item{r}{response}
+}
 \value{
 
 }

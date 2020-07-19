@@ -10,7 +10,15 @@ sets query portion of POST}
 set_query(part, maxResults = 50, mine = NULL, fields = NULL, key, ...)
 }
 \arguments{
-\item{maxResults}{}
+\item{part}{defined_by_api}
+
+\item{maxResults}{number}
+
+\item{mine}{my_info}
+
+\item{fields}{api_specific}
+
+\item{key}{api_specific}
 }
 \value{
 list

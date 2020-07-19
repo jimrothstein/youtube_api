@@ -8,6 +8,9 @@ set_config
 \usage{
 set_config(token)
 }
+\arguments{
+\item{token}{permission}
+}
 \value{
 
 }
