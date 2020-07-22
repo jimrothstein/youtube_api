@@ -8,6 +8,9 @@ function get_json
 \usage{
 get_json(r)
 }
+\arguments{
+\item{r}{response}
+}
 \value{
 json_content
 }

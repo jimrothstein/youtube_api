@@ -6,7 +6,14 @@
 get_batch_videos
 ---------}
 \usage{
-get_batch_videos(url, query, config)
+get_batch_videos(base_url, query, config)
+}
+\arguments{
+\item{base_url}{ur_provide_by_api}
+
+\item{query}{query_string}
+
+\item{config}{good_question}
 }
 \value{
 

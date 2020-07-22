@@ -4,16 +4,15 @@
 
 #-----------------
 
-if (is.null(api) api <- get_api_codes()
-
+if (!exists("api")) api <- get_api_codes()
 
 # initial global values | set .httr_oauth
-l <- get_typical_yt()
 
+# don't want to keep typing this
+l <- get_typical_yt()
 maxResults  <- l$maxResults
 playlistId  <- l$playlistId
-video_id = l$video_id
-
+video_id = l$videoId
 #### 003_youtube_api_retrieve_one_video
 base_url <- "https://www.googleapis.com/youtube/v3/videos"
 
@@ -22,6 +21,7 @@ api_opts <- list(part = "snippet",
                  maxResults = maxResults,
                  fields="items(snippet(title))",
                  key = api$api_key)
+
 r <- httr::GET(base_url, query = api_opts) 
 httr::content(r)
 

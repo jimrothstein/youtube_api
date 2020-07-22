@@ -24,7 +24,7 @@
 api <- get_api_codes()
 library(tuber)
 
-yt_oauth(
+tuber::yt_oauth(
 app_id = api$oauth2_id,
 app_secret = api$oauth2_secret
 )
@@ -37,9 +37,9 @@ app_secret = api$oauth2_secret
 #### 04_video - works
 ```{r}
 video_id <- "UCVdHFHpFBg"   # Tex Ritter Range Party
-a <- get_stats(video_id=video_id)
+a <- tuber::get_stats(video_id=video_id)
 
-x <- as_tibble(a)   # works
+x <- tibble::as_tibble(a)   # works
 x
 # but
 y <- tibble(a)   #  leaves as list

@@ -2,13 +2,16 @@
 # 
 # REF: HADLEY has demos: oauth1 and oauth 2, various popular apis
 # https://github.com/r-lib/httr/tree/master/demo
-
-
 #' ---------
 #' set_query
 #' ---------
 #' sets query portion of POST
 #'
+#' @param part defined_by_api
+#' @param maxResults number
+#' @param mine my_info
+#' @param fields api_specific
+#' @param key api_specific
 #' @return list
 #' @export
 set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
@@ -24,7 +27,7 @@ set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
 #' ---------
 #' set_config
 #' ---------
-#'
+#' @param token permission
 #' @return 
 #' @export
 
@@ -38,6 +41,7 @@ set_config <- function(token) {
 #' function get_json
 #' -----------------
 #'
+#' @param r response
 #' @return json_content
 #' @export
 #'
@@ -51,6 +55,7 @@ get_json <- function(r) {
 #' function nextPageToken
 #' ----------------
 #'
+#' @param r response
 #' @return 
 #' @export
 #'
@@ -62,13 +67,48 @@ get_nextPageToken <- function(r) {
 #' get_batch_videos
 #' ---------
 #'
+#' @param base_url ur_provide_by_api
+#' @param query  query_string
+#' @param config good_question
 #' @return
 #' @export
 
-get_batch_videos  <- function(url,query,config) {
+get_batch_videos  <- function(base_url,query,config) {
 			# get a block (upto maxResults)
 			r <- httr::GET(url = base_url, 
 											query= query, 
 											config = config
 			) %>% httr::stop_for_status()
 }
+
+#'-----------------
+#' get_api_codes
+#'-----------------
+#'
+#' @return
+#' @export
+
+get_api_codes  <- function() {
+	api  <- list(api_key = Sys.getenv("API_KEY"),
+				 oauth2_id = Sys.getenv("OAUTH2_ID"),
+				 oauth2_secret = Sys.getenv("OAUTH2_SECRET"))
+}
+
+#'-----------------
+#' get_typical_yt
+#'-----------------
+
+#' returns pre-set examples for channelId, playlistId, videoId
+#'   and maxResults = 50
+#' playlistId <- "PLbcglKxZP5PMBoG1VfCqlWZ1Nx4FBBOn6"  # 60s - female (300+)
+#' videoId <- "UCVdHFHpFBg"   # Tex Ritter Range Party
+#' @return list
+#' @export
+get_typical_yt  <- function(){
+	values  <- list(
+						maxResults = 50,
+						channelId =  "UClB5qWyXejlAwwkDAzJis-Q", # my channel
+						playlistId = "PLbcglKxZP5PMU2rNPBpYIzLTgzd5aOHw2", # 60s (124)
+						videoId = "bMaCoxOGXPM" )  # You Made me Love You)
+}
+
