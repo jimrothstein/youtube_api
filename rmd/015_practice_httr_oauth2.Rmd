@@ -1,0 +1,85 @@
+
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+
+PRACTICE:   replace yt_tuber with httr::   
+REF:  github.com/r-lib/httr/demo/oauth2_google.r
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(yt)
+library(here)
+```
+
+
+```{r render, eval=FALSE	}
+here()
+file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+
+```{r end_point}
+# view endpoints for google
+httr::oauth_endpoints("google")
+```
+
+```{r register_app}
+jim_app  <- httr::oauth_app("google",
+	key = "",
+	secret = ""
+)
+```
+
+```{r get_token}
+google_token  <- oauth2.0(oauth2_endpoints("google"),
+													jim_app,
+													scope=" hadley uses ..userinfo.profile at 
+													googleapis.com ???"
+```
+
+```{r write_code}
+r  <- GET(xxx,
+					config(token = google_token)
+					)
+```
+
+
+ 
+
+
+
+```{r knit_exit()}
+knitr::knit_exit()
+```
+
+
+
+***
+
+
+
+
+
+

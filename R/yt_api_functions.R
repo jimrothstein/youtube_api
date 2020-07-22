@@ -112,3 +112,14 @@ get_typical_yt  <- function(){
 						videoId = "bMaCoxOGXPM" )  # You Made me Love You)
 }
 
+#'
+#' get_oauth_endpoints
+#'
+#' returns google endpoints
+#' @return list
+#' @export
+
+get_oauth_endpoints   <- function(x="google") {
+	httr::oauth_endpoints(x)
+}
+
