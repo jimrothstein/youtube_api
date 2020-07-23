@@ -5,15 +5,26 @@
 #' ---------
 #' set_query
 #' ---------
-#' sets query portion of POST
 #'
-#' @param part defined_by_api
-#' @param maxResults number
-#' @param mine my_info
+#' @description
+#' sets query portion of POST.
+#'   * item1
+#'   * item2
+#'
+#' Additional paragraph.   As much as you want.
+#'
+#' @param part defined_by_api.
+#' @param maxResults number.
+#' @param mine my_info.
 #' @param fields api_specific
 #' @param key api_specific
 #' @return list
-#' @export
+#' @export  
+#' @examples
+#' \dontrun{
+#' set_query("......")
+#' }
+
 set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
 	query <- list(part = part,
 								maxResults = maxResults, 

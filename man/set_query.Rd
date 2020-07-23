@@ -4,17 +4,16 @@
 \alias{set_query}
 \title{---------
 set_query
----------
-sets query portion of POST}
+---------}
 \usage{
 set_query(part, maxResults = 50, mine = NULL, fields = NULL, key, ...)
 }
 \arguments{
-\item{part}{defined_by_api}
+\item{part}{defined_by_api.}
 
-\item{maxResults}{number}
+\item{maxResults}{number.}
 
-\item{mine}{my_info}
+\item{mine}{my_info.}
 
 \item{fields}{api_specific}
 
@@ -24,8 +23,14 @@ set_query(part, maxResults = 50, mine = NULL, fields = NULL, key, ...)
 list
 }
 \description{
----------
-set_query
----------
-sets query portion of POST
+sets query portion of POST.
+  * item1
+  * item2
+
+Additional paragraph.   As much as you want.
+}
+\examples{
+\dontrun{
+set_query("......")
+}
 }

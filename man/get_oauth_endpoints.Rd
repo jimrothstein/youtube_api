@@ -6,6 +6,9 @@
 \usage{
 get_oauth_endpoints(x = "google")
 }
+\value{
+list
+}
 \description{
 returns google endpoints
 }

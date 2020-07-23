@@ -1,4 +1,3 @@
-
 ---
 title: Template for .Rmd
 output: 
@@ -17,22 +16,29 @@ geometry: margin=0.5in,top=0.25in
 
 
 PRACTICE:   replace yt_tuber with httr::   
-REF:  github.com/r-lib/httr/demo/oauth2_google.r
+REF:  
+*  github.com/r-lib/httr/demo/oauth2_google.r
+*  [jennybc] (https://github.com/tidyverse/googledrive/blob/master/vignettes/articles/bring-your-own-app.Rmd)
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(
+											echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE)
 ```
 
 ```{r library, include=FALSE		}
 library(jimTools)
 library(yt)
 library(here)
+library(httr)
 ```
 
 
 ```{r render, eval=FALSE	}
 here()
-file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file <- "015_practice_httr_oauth2.Rmd"
 file  <- basename(file)
 dir="rmd"
 
@@ -40,24 +46,46 @@ jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
 ```
 
-```{r end_point}
-# view endpoints for google
-httr::oauth_endpoints("google")
+```{r api_secrets}
+api <- get_api_codes()
+api
 ```
 
-```{r register_app}
-jim_app  <- httr::oauth_app("google",
-	key = "",
-	secret = ""
+```{r end_point}
+# view endpoints for google
+endpt  <- httr::oauth_endpoints(name = "google")
+endpt
+# https://accounts.google.com/o/oauth2/v2/auth
+google_endpoint = oauth_endpoint(
+										 base_url = "https://accounts.google.com/o/oauth2/v2/auth", 
+										 authorize = "auth", 
+										 access = "token", 
+										 validate = "https://www.googleapis.com/oauth2/v1/tokeninfo",
+										 revoke = "revoke"
 )
 ```
 
-```{r get_token}
-google_token  <- oauth2.0(oauth2_endpoints("google"),
-													jim_app,
-													scope=" hadley uses ..userinfo.profile at 
-													googleapis.com ???"
+
+```{r register_app}
+jim_app  <- httr::oauth_app(
+	appname = "my_google",
+	key = api$oauth2_id,
+	secret = api$api_secret
+)
 ```
+STOP  -- error 400
+```{r get_token}
+# https://github.com/r-lib/httr/blob/master/demo/oauth2-google.r
+
+google_token <- oauth2.0_token(
+		endpoint = google_endpoint, 
+		app = jim_app, 
+		#scope = "https://www.googleapis.com/auth/userinfo.profile"
+		scope = "https://www.googleapis.com/auth/youtube.readonly"
+)
+
+```
+
 
 ```{r write_code}
 r  <- GET(xxx,
@@ -65,6 +93,25 @@ r  <- GET(xxx,
 					)
 ```
 
+```{r get_playlists}
+
+
+query  <- set_query( part="snippet",
+							maxResults =2,
+							mine = TRUE,
+							fields = "pageInfo(totalResults)",
+							key = api$api_key)
+
+config <- set_config(token=google_token)
+
+# ---------
+r <- httr::GET(base_url,
+							 query=query, 
+							 config= config) 
+
+httr::stop_for_status(r, "GET")
+json_content  <- get_json(r)
+count  <- json_content$pageInfo$totalResults
 
  
 
@@ -73,13 +120,4 @@ r  <- GET(xxx,
 ```{r knit_exit()}
 knitr::knit_exit()
 ```
-
-
-
-***
-
-
-
-
-
 
