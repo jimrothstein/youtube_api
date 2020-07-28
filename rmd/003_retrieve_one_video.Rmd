@@ -1,0 +1,91 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+---
+/home/jim/.config/nvim/templates/skeleton.Rmd
+othercomments
+---
+
+<!--  commments -->
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(here)
+```
+
+
+```{r render, eval=FALSE	}
+here()
+file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+```{r api}
+
+# /* vim: set nospell: */ 
+
+# /home/jim/code/pkg_yt_api/exclude/003_retrieve_one_video.R
+
+#-----------------
+
+if (!exists("api")) api <- get_api_codes()
+
+```
+
+```{r initialize}
+
+# initial global values | set .httr_oauth
+
+# don't want to keep typing this
+
+l <- get_typical_yt()
+maxResults  <- l$maxResults
+playlistId  <- l$playlistId
+video_id = l$videoId
+base_url <- "https://www.googleapis.com/youtube/v3/videos"
+```
+
+```{r}
+
+api_opts <- list(part = "snippet",
+                 id = video_id,
+                 maxResults = maxResults,
+                 fields="items(snippet(title))",
+                 key = api$api_key)
+
+r <- httr::GET(base_url, query = api_opts) 
+httr::content(r)
+
+```
+
+```{r knit_exit()}
+knitr::knit_exit()
+```
+
+***
+
+
+
+
+
+

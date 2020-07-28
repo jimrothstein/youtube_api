@@ -1,41 +1,91 @@
-# 001_try_tuber_youtube_api.R
-## EXAMPLES:   using vanilla tuber, without httr
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
 
-### my Google credentials: https://console.cloud.google.com/apis/credentials?project=sunny-aleph-164504
+---
+/home/jim/.config/nvim/templates/skeleton.Rmd
+othercomments
+---
 
-### References
-# youtube api:  https://developers.google.com/youtube/v3/getting-started
-# 
+<!--  commments -->
 
-# using google api explorer:
-# https://developers.google.com/youtube/v3/docs/?apix=true
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
 
-#R-bloggers example: https://www.r-bloggers.com/using-the-tuber-package-to-analyse-a-youtube-channel/ 
-#-  tuber: https://soodoku.github.io/tuber/articles/tuber-ex.html
-#
-
-
-
-#### 03_google setup
-# click on my picture (in youtube)
-# my channel_id=UClB5qWyXejlAwwkDAzJis-Q
-
-# my google credentials,   google will then verify
-api <- get_api_codes()
+```{r library, include=FALSE		}
 library(tuber)
+library(jimTools)
+library(here)
+```
 
+
+```{r render, eval=FALSE	}
+here()
+file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+
+
+001_try_tuber_youtube_api.R
+EXAMPLES:   using vanilla tuber, without httr
+
+my Google credentials: https://console.cloud.google.com/apis/credentials?project=sunny-aleph-164504
+
+References
+youtube api:  https://developers.google.com/youtube/v3/getting-started
+ 
+
+ using google api explorer:
+ https://developers.google.com/youtube/v3/docs/?apix=true
+
+R-bloggers example: https://www.r-bloggers.com/using-the-tuber-package-to-analyse-a-youtube-channel/ 
+ tuber: https://soodoku.github.io/tuber/articles/tuber-ex.html
+
+
+
+
+ 03_google setup
+ click on my picture (in youtube)
+ my channel_id=UClB5qWyXejlAwwkDAzJis-Q
+
+ my google credentials,   google will then verify
+```{r get_api}
+
+api <- get_api_codes()
+```
+
+sets .httr_oauth (unless exists)
+returns token
+```{r oauth2}
 tuber::yt_oauth(
 app_id = api$oauth2_id,
 app_secret = api$oauth2_secret
 )
+```
 
+004_video - works
+```{r}
 # some samples:
 
 #channel_id <- "UClB5qWyXejlAwwkDAzJis-Q" # my channel
 #video_id <- "UCVdHFHpFBg"   # Tex Ritter Range Party
-
-#### 04_video - works
-```{r}
 video_id <- "UCVdHFHpFBg"   # Tex Ritter Range Party
 a <- tuber::get_stats(video_id=video_id)
 
@@ -231,5 +281,18 @@ snips <- map(l, "snippet")
 
 map_chr(snips, "title")
 ```
+
+
+
+
+```{r knit_exit()}
+knitr::knit_exit()
+```
+
+***
+
+
+
+
 
 
