@@ -2,4 +2,8 @@
 inst/doc
 *.RDS
 *.Rd
+
+
+# directories
 man/
+pdf/
