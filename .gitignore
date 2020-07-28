@@ -1,3 +1,5 @@
 .httr-oauth
 inst/doc
 *.RDS
+*.Rd
+man/
