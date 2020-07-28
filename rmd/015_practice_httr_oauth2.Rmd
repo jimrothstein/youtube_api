@@ -81,7 +81,8 @@ google_token <- oauth2.0_token(
 		endpoint = google_endpoint, 
 		app = jim_app, 
 		#scope = "https://www.googleapis.com/auth/userinfo.profile"
-		scope = "https://www.googleapis.com/auth/youtube.readonly"
+		scope = ssl
+		# scope = "https://www.googleapis.com/auth/youtube.readonly"
 )
 
 ```

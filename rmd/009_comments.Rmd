@@ -1,0 +1,138 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+# ======================================
+#### 001_get_comments, for GIVEN video
+# ======================================
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+```{r library, include=FALSE		}
+library(jimTools)
+library(here)
+library(dplyr)
+library(magrittr)
+load_all()
+```
+```{r render, eval=FALSE	}
+here()
+file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+
+```{r token}
+api  <- get_api_codes()
+# set .httr_oauth  and token
+# default uses scope="ssl
+myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
+													app_secret = api$oauth2_secret)
+```
+
+```{r initialize}
+base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
+l <- get_typical_yt()
+maxResults  <- l$maxResults
+playlistId  <- l$playlistId
+video_Id  <- l$videoId
+
+ google_token = base::getOption("google_token") 
+config  <- set_config(google_token)
+
+#playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
+
+```
+
+```{r query}
+
+# ========
+# QUERY 
+# ========
+
+query  <- set_query( part="snippet", 
+	maxResults =maxResults, 
+	mine = FALSE,
+	fields="nextPageToken,
+					items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
+	key = api$api_key, 
+	pageToken = NULL, 
+	id = l$videoId)
+
+config  <- set_config(google_token)
+
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+
+json_content <- get_json(r)
+
+# to get comments, wade through empty levels
+comments <- json_content$items$snippet$topLevelComment$snippet
+comments  <- as_tibble(comments)
+
+#  FIX, pageInfo is not specified in fields
+# httr::content(r)$pageInfo$totalResults  # 130
+
+# ==================================
+##more batches ?
+# ---- loop till no more token ---
+# ==================================
+
+get_remainder  <- function(r) {
+query  <- set_query( part="snippet",
+							maxResults =maxResults,
+							mine = FALSE,
+							fields="nextPageToken, items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
+							key = api$api_key,
+						  pageToken = get_nextPageToken(r),
+							videoId = video_Id)
+
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+}
+
+
+process_comments  <- function(r, comments) {
+	json_content <- get_json(r)
+	next_comments <- json_content$items$snippet$topLevelComment$snippet
+	next_comments  <- as_tibble(next_comments)
+	comments <- rbind(comments, next_comments)
+}
+
+# get remainder of videos
+while ( !is.null(get_nextPageToken(r)) ) {
+	r  <- get_remainder(r)
+	comments  <- process_comments(r, comments)
+
+} # end loop
+
+
+saveRDS(comments, file="data/comments.RDS")
+
+t <- as_tibble(comments)
+t
+
+head(knitr::kable(t))
+
+
+
