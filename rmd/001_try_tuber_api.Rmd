@@ -59,8 +59,6 @@ R-bloggers example: https://www.r-bloggers.com/using-the-tuber-package-to-analys
  tuber: https://soodoku.github.io/tuber/articles/tuber-ex.html
 
 
-
-
  03_google setup
  click on my picture (in youtube)
  my channel_id=UClB5qWyXejlAwwkDAzJis-Q
@@ -97,6 +95,7 @@ If .httr-oauth
 	validate_oauth2.0() is actual call to Google
 
 ```
+
 
 ```{r oauth2}
 tuber::yt_oauth(
