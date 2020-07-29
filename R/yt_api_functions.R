@@ -86,6 +86,7 @@ get_nextPageToken <- function(r) {
 
 get_batch_videos  <- function(base_url,query,config) {
 			# get a block (upto maxResults)
+			browser()
 			r <- httr::GET(url = base_url, 
 											query= query, 
 											config = config

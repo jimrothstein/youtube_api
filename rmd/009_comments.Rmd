@@ -30,7 +30,7 @@ load_all()
 ```
 ```{r render, eval=FALSE	}
 here()
-file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file <- "rmd/009_comments.Rmd"
 file  <- basename(file)
 dir="rmd"
 
@@ -53,7 +53,7 @@ maxResults  <- l$maxResults
 playlistId  <- l$playlistId
 video_Id  <- l$videoId
 
- google_token = base::getOption("google_token") 
+google_token = base::getOption("google_token") 
 config  <- set_config(google_token)
 
 #playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
@@ -65,18 +65,29 @@ config  <- set_config(google_token)
 # ========
 # QUERY 
 # ========
+paste("nextPageToken","items", 
+			sep=", ")
 
-query  <- set_query( part="snippet", 
+# fields , careful if split on mutliple lines, use paste
+query  <- set_query( part="snippet,replies", 
 	maxResults =maxResults, 
 	mine = FALSE,
-	fields="nextPageToken,
-					items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
+	fields=paste(sep=", ", "nextPageToken", 
+			 "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
+			 ),
 	key = api$api_key, 
+
 	pageToken = NULL, 
-	id = l$videoId)
+	videoId = l$videoId)
 
 config  <- set_config(google_token)
+```
+works
+```{r the_call_using_yt, eval=FALSE	}
+t  <- tuber::get_comment_threads(filter = c(video_id = l$videoId))
+```
 
+```{r the_call		}
 r <- httr::GET(base_url, 
                query = query,
 							 config = config
@@ -90,6 +101,8 @@ comments  <- as_tibble(comments)
 
 #  FIX, pageInfo is not specified in fields
 # httr::content(r)$pageInfo$totalResults  # 130
+```
+```{r}
 
 # ==================================
 ##more batches ?
@@ -136,3 +149,4 @@ head(knitr::kable(t))
 
 
 
+```

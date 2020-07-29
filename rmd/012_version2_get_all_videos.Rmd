@@ -54,13 +54,13 @@ myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
 l <- get_typical_yt()
 maxResults  <- l$maxResults
+maxResults  <- 3
 playlistId  <- l$playlistId
 google_token = base::getOption("google_token") 
 config  <- set_config(google_token)
 
-# https://www.youtube.com/playlist?list=PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l
-playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
-
+# r_next videos
+playListId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc "
 ```
 
 ```{r query}
@@ -72,15 +72,15 @@ query  <- set_query(part="snippet",
                 playlistId=playlistId,
                 pageToken="",
 								mine=FALSE,
-                fields=
-"nextPageToken, items(snippet(title, description, position))",
+                fields=paste(sep=", ", "nextPageToken", 
+									"items(snippet(title, description, position))"),
                 key=api$api_key)
 
 # what si this?
 config  <- set_config(google_token)
 config  <- set_config(myapp)
 
-get_all_videos  <- function(url,query,config){
+get_all_videos  <- function(base_url,query,config){
 
 	r  <- get_batch_videos(base_url, query, config)
 	json_content <- get_json(r)
