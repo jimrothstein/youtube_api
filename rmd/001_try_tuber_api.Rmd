@@ -14,23 +14,17 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
----
-/home/jim/.config/nvim/templates/skeleton.Rmd
-othercomments
----
-
-<!--  commments -->
-
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, collapse=TRUE)
 ```
 
 ```{r library, include=FALSE		}
-library(tuber)
 library(jimTools)
 library(here)
+load_all()
 ```
-
 
 ```{r render, eval=FALSE	}
 here()
@@ -42,61 +36,25 @@ jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
 ```
 
-
+Notes:
 001_try_tuber_youtube_api.R
-EXAMPLES:   using vanilla tuber, without httr
-
 my Google credentials: https://console.cloud.google.com/apis/credentials?project=sunny-aleph-164504
 
 References
 youtube api:  https://developers.google.com/youtube/v3/getting-started
- 
 
- using google api explorer:
- https://developers.google.com/youtube/v3/docs/?apix=true
+[google api explorer:]( https://developers.google.com/youtube/v3/docs/?apix=true)
 
 R-bloggers example: https://www.r-bloggers.com/using-the-tuber-package-to-analyse-a-youtube-channel/ 
  tuber: https://soodoku.github.io/tuber/articles/tuber-ex.html
 
 
- 03_google setup
- click on my picture (in youtube)
- my channel_id=UClB5qWyXejlAwwkDAzJis-Q
-
- my google credentials,   google will then verify
 ```{r get_api}
 api <- get_api_codes()
 ```
 
-sets .httr_oauth (unless exists)
-returns token
-[yt_oauth.R](https://github.com/soodoku/tuber/blob/master/R/yt_oauth.R)
-```{r how_yt_oauth_works, eval=FALSE, include = FALSE	 }
 
-tuber::yt_oauth(app_id = NULL, 
-  app_secret = NULL, 
-	scope = "ssl",
-  token = ".httr-oauth", ...)
-
-If .httr-oauth 
-*	EXISTS, reads it, assigns to google-token
-* NOT EXIST, 
-	(1)   myapp <- oauth_app("google", key = app_id, secret =
-	app_secret)
-	(2)   gets token (assuming default scope: ssl)
-	google_token <- oauth2.0_token(
-	  oauth_endpoints("google"), 
-		myapp,
-    scope = "https://www.googleapis.com/auth/youtube.force-ssl", ...)
-	(2a) also, this httr function also caches token to file:  .httr-oauth
-	(3)  stores token in option:  
-	options(google_token = google_token)
-
-	validate_oauth2.0() is actual call to Google
-
-```
-
-
+001 get token and set .httr_oauth (if not done before)
 ```{r oauth2}
 tuber::yt_oauth(
 app_id = api$oauth2_id,
@@ -104,8 +62,37 @@ app_secret = api$oauth2_secret
 )
 ```
 
-004_video - works
+002 get total number of playlists
+```{r total_number}
+# GET https://www.googleapis.com/youtube/v3/playlists 
+
+query  <- list(
+						part="contentDetails",
+    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+						max_results=3,
+						fields="pageInfo(totalResults)",
+						key = api$key
+						)
+
+# easier to use httr:: (vs tuber's)
+jr_get_total_playlists(query) #142
+
+# tuber::get_playlists(
+#     filter=c(channel_id="UClB5qWyXejlAwwkDAzJis-Q"),
+#     part="contentDetails",
+#     max_results = 10,
+#     simplify=TRUE,
+#     fields="pageInfo(totalResults)"
+)
+
+```
+
+
+***
+CLEAN UP!
+
 ```{r}
+
 # some samples:
 
 #channel_id <- "UClB5qWyXejlAwwkDAzJis-Q" # my channel
@@ -118,54 +105,21 @@ x
 # but
 y <- tibble(a)   #  leaves as list
 
-details <- get_video_details(video_id = video_id )
+details <- tuber::get_video_details(video_id = video_id )
 d <- as_tibble(details)
-
-# get title
-d$items[[1]]$snippet$title
-
-str(details$items[[1]]$snippet, max.level =1)
-glimpse(d$items)
-d$items[[1]]$kind
-
 ```
 
 
-#### 05_channel_all_playlists
+05_channel_all_playlists
 ```{r}
-z <- tibble(get_playlists(
+get_playlists(
     filter=c(channel_id="UClB5qWyXejlAwwkDAzJis-Q"),
     part="snippet,contentDetails",
     max_results = 10,
-    simplify=TRUE)
-)
-# NOTE: use of fields=   
-# cutback on quota use, 
-z <- tibble(response=get_playlists(
-    filter=c(channel_id="UClB5qWyXejlAwwkDAzJis-Q"),
-    part="snippet",
-    max_results = 10,
     simplify=TRUE,
-    fields="items(id,snippet(title,position))")
+    fields="items(id,snippet(title,position))"
 )
 
-# EXPLORE - using JennyBC basic ideas
-z$response[[1]]
-z$response[[ 2 ]]
-z$response[[ 3 ]]
-z$response[[ 4 ]] # 129 results?
-z$response[[ 5 ]] # mess,  but what we want
-
-# get a feel:  $snippet looks good
-z$response[[5]][[1]] %>% str(max.level=1)
-o
-# snippet$title is what we want!
-z$response[[5]][[1]]$snippet  %>% str(max.level=1)
-z$response[[5]][[10]]$snippet  %>% str(max.level=1)
-
-# ALL MY PLAYLISTS <chr[]>
-# bingo!  c("snippet", "title") is walking down tree....
-map_chr(z$response[[5]],c("snippet","title"))
 ```
 
 #### 06_list_channel_videos (ID only?)
@@ -319,4 +273,32 @@ knitr::knit_exit()
 
 
 
+CLEAN UP
 
+sets .httr_oauth (unless exists)
+returns token
+[yt_oauth.R](https://github.com/soodoku/tuber/blob/master/R/yt_oauth.R)
+```{r how_yt_oauth_works, eval=FALSE, include = FALSE	 }
+
+tuber::yt_oauth(app_id = NULL, 
+  app_secret = NULL, 
+	scope = "ssl",
+  token = ".httr-oauth", ...)
+
+If .httr-oauth 
+*	EXISTS, reads it, assigns to google-token
+* NOT EXIST, 
+	(1)   myapp <- oauth_app("google", key = app_id, secret =
+	app_secret)
+	(2)   gets token (assuming default scope: ssl)
+	google_token <- oauth2.0_token(
+	  oauth_endpoints("google"), 
+		myapp,
+    scope = "https://www.googleapis.com/auth/youtube.force-ssl", ...)
+	(2a) also, this httr function also caches token to file:  .httr-oauth
+	(3)  stores token in option:  
+	options(google_token = google_token)
+
+	validate_oauth2.0() is actual call to Google
+
+```

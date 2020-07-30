@@ -86,7 +86,6 @@ get_nextPageToken <- function(r) {
 
 get_batch_videos  <- function(base_url,query,config) {
 			# get a block (upto maxResults)
-			browser()
 			r <- httr::GET(url = base_url, 
 											query= query, 
 											config = config
@@ -120,8 +119,8 @@ get_typical_yt  <- function(){
 	values  <- list(
 						maxResults = 50,
 						channelId =  "UClB5qWyXejlAwwkDAzJis-Q", # my channel
-						playlistId = "PLbcglKxZP5PMU2rNPBpYIzLTgzd5aOHw2", # 60s (124)
-						videoId = "bMaCoxOGXPM" )  # You Made me Love You)
+						videoId = "bMaCoxOGXPM",   # You Made me Love You)
+						playlistId = "PLbcglKxZP5PMU2rNPBpYIzLTgzd5aOHw2")
 }
 
 #'
