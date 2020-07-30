@@ -1,47 +1,81 @@
-# /* vim: set nospell: */ 
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
 
-# /home/jim/code/pkg_yt_api/exclude/011_playlists.R
+/home/jim/code/pkg_yt_api/exclude/011_playlists.Rmd
+
+---- PURPOSE ----
+given a , return list of all playlists
+----------------
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE)
+```
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(here)
+library(dplyr)
+library(magrittr)
 load_all()
+```
+```{r render, eval=FALSE	}
+here()
+file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file  <- basename(file)
+dir="rmd"
 
-# ---- set once ----
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+ ---- set once ----
+```{r token}
 api <- get_api_codes()
 myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 													app_secret = api$oauth2_secret
 )
+```
+```{r initialize}
 l <- get_typical_yt()
-google_token  <- base::getOption("google_token")
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 
-# NEED this?	
-set_playlists <- function(l, base_url) {
-	maxResults  <- l$maxResults
-	playlistId  <- l$playlistId
-	video_id = l$video_id
-}
-maxResults <- l$maxResults
-# ---------
+```
 
-query  <- set_query( part="snippet",
-							maxResults =maxResults,
-							mine = TRUE,
-              fields="nextPageToken,items(id,snippet(title,description,channelId,publishedAt))",
-							key = api$api_key,
-							pageToken = NULL)
+```{r query}
 
+query  <- set_query( 
+					part="snippet",
+					channelId = l$channelId,
+					maxResults = l$maxResults,
+         fields="nextPageToken,items(id,snippet(title,description,channelId,publishedAt))",
+					key = api$api_key,
+					pageToken = NULL)
+```
 
-config  <- set_config(token = google_token)
-
-
+```{r call }
 r <- httr::GET(base_url, 
-               query = query,
-							 config = config
-               ) %>% httr::stop_for_status()
-
+           query = query,
+					 config = httr::config(token=getOption("google_token"))) %>% 
+						 httr::stop_for_status()
+)
 json_content <- get_json(r)
+
 # playlists is data.frame, 50 x 4
 playlists <- json_content$items$snippet
-str(playlists)
-head(playlists)
 
 ##  sTART HERE
 ##more batches ?
