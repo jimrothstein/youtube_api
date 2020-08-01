@@ -17,13 +17,12 @@ geometry: margin=0.5in,top=0.25in
 pkg_yt_api/exclude/012_playlistitems.Rmd
 
 ---- PURPOSE ----
-given a playlist, return list of videos
+given ONE playlist, return list of videos
 ----------------
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
 ```
-
 ```{r library, include=FALSE		}
 library(jimTools)
 library(here)
@@ -34,7 +33,7 @@ load_all()
 
 ```{r render, eval=FALSE	}
 here()
-file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file <- "012_version2_get_all_videos.Rmd"
 file  <- basename(file)
 dir="rmd"
 
@@ -45,96 +44,65 @@ jimTools::ren_github(file, dir)
 ```{r token}
 api  <- get_api_codes()
 # set .httr_oauth  and token
-# default uses scope="ssl
 myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 													app_secret = api$oauth2_secret)
 ```
 ```{r initialize}
-
 base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
-l <- get_typical_yt()
-maxResults  <- l$maxResults
-maxResults  <- 3
-playlistId  <- l$playlistId
-google_token = base::getOption("google_token") 
-config  <- set_config(google_token)
+playlistId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc "
 
-# r_next videos
-playListId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc "
+l <- get_typical_yt()
 ```
 
 ```{r query}
-# =================
-# 002_setup call
-# ================
-query  <- set_query(part="snippet",
-                maxResults=maxResults,
-                playlistId=playlistId,
+# deprecate yt::set_query
+query  <- list(part="snippet",
+                maxResults=l$maxResults,
+                playlistId=l$playlistId,	
                 pageToken="",
-								mine=FALSE,
                 fields=paste(sep=", ", "nextPageToken", 
 									"items(snippet(title, description, position))"),
                 key=api$api_key)
 
-# what si this?
-config  <- set_config(google_token)
-config  <- set_config(myapp)
-
+config  <-  httr::config(token=getOption("google_token"))
+```
+```{r call}
 get_all_videos  <- function(base_url,query,config){
 
+	# first batch	
 	r  <- get_batch_videos(base_url, query, config)
 	json_content <- get_json(r)
 	videos <- json_content$items$snippet
 
-		# if multiple blocks, loop
-		while ( !is.null(get_nextPageToken(r)) ) {
-				query$pageToken  <- get_nextPageToken(r)
-				r<- get_batch_videos(url = base_url, query,config)
+	#if additional batches,  loop
+	while ( !is.null(get_nextPageToken(r)) ) {
+			query$pageToken  <- get_nextPageToken(r)
+			r<- get_batch_videos(base_url, query,config)
 
-				# process
-				json_content <- get_json(r)
-				next_videos <- json_content$items$snippet
-				videos <- rbind(videos, next_videos)
-		}	# end loop
+			# process
+			json_content <- get_json(r)
+			next_videos <- json_content$items$snippet
+			videos <- rbind(videos, next_videos)
+
+	}	# end loop
 	return (videos)
 }
 
 # 957 x 3 
 videos <- get_all_videos(base_url,query,config)
 
-str(videos)
-head(videos)
-## jump to bottom
-
-query$playlistId <- "PLbcglKxZP5PMU2rNPBpYIzLTgzd5aOHw2"  # 60s, 133
-next_videos  <- get_all_videos(url,query,config)
-
-videos <- rbind(videos, next_videos)
-
-
-## have videos
-## SAVE
-here::here()
-saveRDS(videos, file=here::here("data/videos.RDS"))
-
-
-
-t  <- videos %>% select(title, position)
-str(t)
-head(t)
-str(t)
-t  <- t %>% dplyr::arrange(title)
-head(t$title)
-
 ```
+cleanup videos
+```{r cleanup}
+t  <- videos %>% select(title, position) %>% 
+	dplyr::arrange(title)
 
-
+saveRDS(videos, file=here::here("data/videos.RDS"))
+```
 
 ```{r knit_exit()}
 knitr::knit_exit()
 ```
-
-***
 
 
 

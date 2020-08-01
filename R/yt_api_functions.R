@@ -26,6 +26,7 @@
 #' }
 
 set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
+	.Depreciated("use list instead")
 	query <- list(part = part,
 								maxResults = maxResults, 
 								mine = mine,
@@ -44,6 +45,7 @@ set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
 
 # ---------
 set_config <- function(token) {
+	.Deprecated("no need to use a function")
 	config  <- httr::config(token =token) 
 }
 
@@ -80,7 +82,7 @@ get_nextPageToken <- function(r) {
 #'
 #' @param base_url ur_provide_by_api
 #' @param query  query_string
-#' @param config good_question
+#' @param config  info related to "google_token"
 #' @return
 #' @export
 

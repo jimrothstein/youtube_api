@@ -19,7 +19,10 @@ geometry: margin=0.5in,top=0.25in
 # ======================================
 
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(
+			echo = TRUE,  
+			comment="      ##",  
+			error=TRUE, collapse=TRUE)
 ```
 ```{r library, include=FALSE		}
 library(jimTools)
@@ -49,59 +52,40 @@ myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 ```{r initialize}
 base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
 l <- get_typical_yt()
-maxResults  <- l$maxResults
-playlistId  <- l$playlistId
-video_Id  <- l$videoId
-
-google_token = base::getOption("google_token") 
-config  <- set_config(google_token)
 
 #playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
 
 ```
 
 ```{r query}
-
-# ========
-# QUERY 
-# ========
-paste("nextPageToken","items", 
-			sep=", ")
-
 # fields , careful if split on mutliple lines, use paste
-query  <- set_query( part="snippet,replies", 
-	maxResults =maxResults, 
-	mine = FALSE,
+query  <- list(
+	part="snippet,replies", 
+	maxResults =l$maxResults, 
 	fields=paste(sep=", ", "nextPageToken", 
 			 "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
 			 ),
 	key = api$api_key, 
-
 	pageToken = NULL, 
 	videoId = l$videoId)
 
-config  <- set_config(google_token)
+google_token = base::getOption("google_token") 
+config  <- httr::config(google_token)
+
 ```
 works
 ```{r the_call_using_yt, eval=FALSE	}
 t  <- tuber::get_comment_threads(filter = c(video_id = l$videoId))
 ```
-
+myway:
 ```{r the_call		}
-r <- httr::GET(base_url, 
-               query = query,
-							 config = config
-               ) %>% httr::stop_for_status()
-
-json_content <- get_json(r)
-
-# to get comments, wade through empty levels
-comments <- json_content$items$snippet$topLevelComment$snippet
-comments  <- as_tibble(comments)
-
 #  FIX, pageInfo is not specified in fields
 # httr::content(r)$pageInfo$totalResults  # 130
+
+
+comments  <- jr_get_batch_comments(base_url, query, config)
 ```
+
 ```{r}
 
 # ==================================
