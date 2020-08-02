@@ -17,7 +17,7 @@ geometry: margin=0.5in,top=0.25in
 /home/jim/code/pkg_yt_api/exclude/011_playlists.Rmd
 
 ---- PURPOSE ----
-given a , return list of all playlists
+given a channel_id , return list of all playlists
 ----------------
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
@@ -35,7 +35,7 @@ load_all()
 ```
 ```{r render, eval=FALSE	}
 here()
-file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
+file <- "011_playlists.Rmd"
 file  <- basename(file)
 dir="rmd"
 
@@ -52,64 +52,57 @@ myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 ```{r initialize}
 l <- get_typical_yt()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
-
 ```
 
 ```{r query}
+query  <- list( 
+			part="snippet",
+			channelId = l$channelId,
+			maxResults = l$maxResults,
+			fields=paste("nextPageToken",
+				"items(id,snippet(title,description,channelId,publishedAt))",
+				sep=", "),
+			key = api$api_key,
+			pageToken = NULL)
 
-query  <- set_query( 
-					part="snippet",
-					channelId = l$channelId,
-					maxResults = l$maxResults,
-         fields="nextPageToken,items(id,snippet(title,description,channelId,publishedAt))",
-					key = api$api_key,
-					pageToken = NULL)
+config  <- httr::config(token=getOption("google_token"))
 ```
 
 ```{r call }
 r <- httr::GET(base_url, 
            query = query,
-					 config = httr::config(token=getOption("google_token"))) %>% 
+					 config = config) %>% 
 						 httr::stop_for_status()
-)
+
 json_content <- get_json(r)
 
 # playlists is data.frame, 50 x 4
 playlists <- json_content$items$snippet
+```
 
-##  sTART HERE
-##more batches ?
-# ---- loop till no more token ---
 
+```{r repeat}
 while ( !is.null(get_nextPageToken(r)) ) {
+		# only 1 change
+		query$pageToken <- get_nextPageToken(r)
 
-# only 1 change
-pageToken <- get_nextPageToken(r)
+		r <- httr::GET(base_url, 
+									query = query,
+									config = config 
+									)
 
-query  <- set_query( part="snippet",
-							maxResults =maxResults,
-							mine = TRUE,
-              fields="nextPageToken,items(id,snippet(title,description,channelId,publishedAt))",
-							key = api$api_key,
-							pageToken = pageToken)
+		json_content <- get_json(r)
+		next_playlists <- json_content$items$snippet
 
-
-config  <- set_config(token = google_token)
-
-r <- httr::GET(base_url, 
-               query = query,
-               config = config 
-               )
-
-
-json_content <- get_json(r)
-# claim:   playlists is data.frame, 50 x 2
-next_playlists <- json_content$items$snippet
-playlists <- rbind(playlists, next_playlists)
+		playlists <- rbind(playlists, next_playlists)
 }
-playlists
-##
+```
+```{r}
+saveRDS(playlists, file=here("data", "playlists.RDS"))
+```
 
+post-processing
+```{r}
 # google stores dates as ISO 8601, as string
 # why need TWO lubridate commands to retrieve simple date?
 playlists <- playlists %>% 
@@ -120,3 +113,4 @@ playlists <- playlists %>%
 playlists
 
 
+```
