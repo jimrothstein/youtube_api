@@ -57,24 +57,28 @@ l <- get_typical_yt()
 ```{r query}
 # deprecate yt::set_query
 query  <- list(part="snippet",
-                maxResults=l$maxResults,
-                playlistId=l$playlistId,	
-                pageToken="",
-                fields=paste(sep=", ", "nextPageToken", 
-									"items(snippet(title, description, position))"),
-                key=api$api_key)
+					maxResults=l$maxResults,
+					playlistId=l$playlistId,	
+					pageToken="",
+					fields=paste(sep=", ", "nextPageToken", 
+						"items(snippet(title, description, position, playlistId))"),
+          key=api$api_key)
 
 config  <-  httr::config(token=getOption("google_token"))
 ```
-```{r call}
-get_all_videos  <- function(base_url,query,config){
 
-	# first batch	
-	r  <- get_batch_videos(base_url, query, config)
+first batch
+```{r first_batch}
+
+	r <- get_batch_videos(base_url, query, config)
 	json_content <- get_json(r)
 	videos <- json_content$items$snippet
 
-	#if additional batches,  loop
+```
+
+```{r additional_batches}
+
+#if additional batches,  loop
 	while ( !is.null(get_nextPageToken(r)) ) {
 			query$pageToken  <- get_nextPageToken(r)
 			r<- get_batch_videos(base_url, query,config)
@@ -85,11 +89,16 @@ get_all_videos  <- function(base_url,query,config){
 			videos <- rbind(videos, next_videos)
 
 	}	# end loop
-	return (videos)
-}
+# all vidoes for ONE playlist
+head(videos)
+```
 
-# 957 x 3 
-videos <- get_all_videos(base_url,query,config)
+
+```{r}
+saveRDS(videos, file=here::here("data/videos.RDS"))
+```
+
+```{r}
 
 ```
 cleanup videos
@@ -97,7 +106,6 @@ cleanup videos
 t  <- videos %>% select(title, position) %>% 
 	dplyr::arrange(title)
 
-saveRDS(videos, file=here::here("data/videos.RDS"))
 ```
 
 ```{r knit_exit()}

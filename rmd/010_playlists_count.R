@@ -1,5 +1,6 @@
 # /home/jim/code/pkg_yt_api/exclude/010_playlists_count.R
 
+# Given a channelId, returns total number of playlists
 # ---- set once ----
 load_all()
 api <- get_api_codes()
