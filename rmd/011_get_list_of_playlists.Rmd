@@ -54,6 +54,11 @@ l <- get_typical_yt()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 ```
 
+```{r get_count_playlists}
+
+```
+
+
 ```{r query}
 query  <- list( 
 			part="snippet",

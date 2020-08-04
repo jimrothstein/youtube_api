@@ -62,31 +62,6 @@ app_secret = api$oauth2_secret
 )
 ```
 
-002 get total number of playlists
-```{r total_number}
-# GET https://www.googleapis.com/youtube/v3/playlists 
-
-query  <- list(
-						part="contentDetails",
-    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
-						max_results=3,
-						fields="pageInfo(totalResults)",
-						key = api$key
-						)
-
-# easier to use httr:: (vs tuber's)
-jr_get_total_playlists(query) #142
-
-# tuber::get_playlists(
-#     filter=c(channel_id="UClB5qWyXejlAwwkDAzJis-Q"),
-#     part="contentDetails",
-#     max_results = 10,
-#     simplify=TRUE,
-#     fields="pageInfo(totalResults)"
-)
-
-```
-
 
 ***
 CLEAN UP!

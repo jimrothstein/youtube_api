@@ -1,14 +1,3 @@
-#' jr_get_total_playlists returns number of playlists
-#' @param query list built prior
-#' @export
- jr_get_total_playlists  <- function(query){
- 		httr::GET("https://www.googleapis.com/youtube/v3/playlists",
- 							query= query,
- 							httr::config(token= getOption("google_token"))
-							)
- }
-
-
 #' jr_get_batch_comments Given videoId, returns one batch comments 
 
 #' @param base_url url for Google api
@@ -28,3 +17,20 @@ jr_get_batch_comments  <- function(base_url, query, config) {
 	comments  <- as_tibble(comments)
 }
 
+#' ---------
+#' jr_get_batch_videos
+#' ---------
+#'
+#' @param base_url ur_provide_by_api
+#' @param query  query_string
+#' @param config  info related to "google_token"
+#' @return
+#' @export
+
+jr_get_batch_videos  <- function(base_url,query,config) {
+			# get a block (upto maxResults)
+			r <- httr::GET(url = base_url, 
+											query= query, 
+											config = config
+			) %>% httr::stop_for_status()
+}

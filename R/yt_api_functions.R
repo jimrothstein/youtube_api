@@ -73,26 +73,10 @@ get_json <- function(r) {
 #' @export
 #'
 get_nextPageToken <- function(r) {
+	.Deprecated("no need")
   httr::content(r)$nextPageToken
 }
 
-#' ---------
-#' get_batch_videos
-#' ---------
-#'
-#' @param base_url ur_provide_by_api
-#' @param query  query_string
-#' @param config  info related to "google_token"
-#' @return
-#' @export
-
-get_batch_videos  <- function(base_url,query,config) {
-			# get a block (upto maxResults)
-			r <- httr::GET(url = base_url, 
-											query= query, 
-											config = config
-			) %>% httr::stop_for_status()
-}
 
 #'-----------------
 #' get_api_codes
@@ -131,7 +115,7 @@ get_typical_yt  <- function(){
 #' returns google endpoints
 #' @return list
 #' @export
-
+#'
 get_oauth_endpoints   <- function(x="google") {
 	httr::oauth_endpoints(x)
 }

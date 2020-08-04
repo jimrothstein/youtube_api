@@ -14,7 +14,7 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
-pkg_yt_api/exclude/012_playlistitems.Rmd
+pkg_yt_api/rmd/012_playlistitems.Rmd
 
 ---- PURPOSE ----
 given ONE playlist, return list of videos
@@ -55,7 +55,6 @@ l <- get_typical_yt()
 ```
 
 ```{r query}
-# deprecate yt::set_query
 query  <- list(part="snippet",
 					maxResults=l$maxResults,
 					playlistId=l$playlistId,	
@@ -70,7 +69,7 @@ config  <-  httr::config(token=getOption("google_token"))
 first batch
 ```{r first_batch}
 
-	r <- get_batch_videos(base_url, query, config)
+	r <- jr_get_batch_videos(base_url, query, config)
 	json_content <- get_json(r)
 	videos <- json_content$items$snippet
 

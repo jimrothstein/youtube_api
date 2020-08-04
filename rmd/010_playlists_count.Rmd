@@ -1,0 +1,101 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+```
+
+```{r library, include=FALSE		}
+library(jimTools)
+library(here)
+load_all()
+```
+
+```{r render, eval=FALSE	}
+here()
+file <- "010_playlists_count.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+Given a channelId, returns total number of playlists
+---- set once ----
+```{r begin}
+api <- get_api_codes()
+myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
+													app_secret = api$oauth2_secret
+)
+google_token  <- base::getOption("google_token")
+base_url <- "https://www.googleapis.com/youtube/v3/playlists"
+```
+
+```{r get_count}
+# GET https://www.googleapis.com/youtube/v3/playlists 
+
+query  <- list(
+						part="contentDetails",
+    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+						max_results=3,
+						fields="pageInfo(totalResults)",
+						key = api$key
+						)
+
+# easier to use httr:: (vs tuber's)
+r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
+ 							query= query,
+ 							httr::config(token= getOption("google_token"))
+							)
+ }
+
+json_content  <- get_json(r)
+count  <- json_content$pageInfo$totalResults
+#jr_get_total_playlists(query) #142
+
+# tuber::get_playlists(
+#     filter=c(channel_id="UClB5qWyXejlAwwkDAzJis-Q"),
+#     part="contentDetails",
+#     max_results = 10,
+#     simplify=TRUE,
+#     fields="pageInfo(totalResults)"
+)
+
+```
+```{r}
+l <- get_typical_yt()
+
+# ---------
+query  <- list( part="snippet",
+							maxResults =2,
+							fields = "pageInfo(totalResults)",
+							key = api$api_key)
+
+config <- httr::config(token=google_token)
+
+# ---------
+r <- httr::GET(base_url,
+							 query=query, 
+							 config= config) 
+
+httr::stop_for_status(r, "GET")
+json_content  <- get_json(r)
+count  <- json_content$pageInfo$totalResults
+```
+
+```{r knit_exit()}
+knitr::knit_exit()
+```
