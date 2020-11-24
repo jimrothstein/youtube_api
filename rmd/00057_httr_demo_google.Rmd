@@ -14,10 +14,9 @@ fontsize: 12pt
 geometry: margin=0.5in,top=0.25in 
 ---
 
-<!-- 
-set cul   "cursorline
-cc=+1			"colorcolumn is 1 more than tw
+From httr github/demos for google
 
+<!-- 
 vim: to format all urls for md
 s/https.*/[&]()/g
 -->
@@ -29,14 +28,12 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = TRUE)
 ```
 
-<!--  RENDER:  see bottom -->
-
 ```{r library, include=FALSE		}
 library(jimTools)
 library(httr)
 ``` 
 
-
+Set up the token
 ```{r begin}
 library(httr)
 
@@ -46,15 +43,16 @@ oauth_endpoints("google")
 
 # 2. Register an application at https://cloud.google.com/console#/project
 #    Replace key and secret below.
+#    NOTE:  google calls this key as "Client ID"
 myapp <- oauth_app("google",
 key="254738439744-0rl7a94t125fbkam9nlkg63p1sm1ski6.apps.googleusercontent.com",
 secret="OjEJig9Mj1QIoo4K07tkp7_B"
 )
-# google calls this key as "Client ID"
 myapp
 
-# This creates .httr-oauth (binary) in project root
-# run this in st (X11) b/c need to approve 
+# This creates .httr-oauth (binary) in project root  (IF it does not yet
+exist)
+# BEST:   run this in st (X11) b/c need to approve 
 # 3. Get OAuth credentials
 google_token <- oauth2.0_token(oauth_endpoints("google"), myapp,
   scope = "https://www.googleapis.com/auth/userinfo.profile"
@@ -68,6 +66,10 @@ req <- GET(
 stop_for_status(req)
 content(req)
 ```
+
+```{r one_video}
+```
+
 
 ***
 
