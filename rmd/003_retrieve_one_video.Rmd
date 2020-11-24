@@ -14,13 +14,6 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
----
-/home/jim/.config/nvim/templates/skeleton.Rmd
-othercomments
----
-
-<!--  commments -->
-
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
 ```
