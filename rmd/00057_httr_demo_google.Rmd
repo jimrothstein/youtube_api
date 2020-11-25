@@ -29,8 +29,10 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 ```{r library, include=FALSE		}
+
 library(jimTools)
 library(httr)
+
 ``` 
 
 Set up the token
@@ -68,6 +70,28 @@ content(req)
 ```
 
 ```{r one_video}
+
+if (!exists("api")) api <- get_api_codes()
+
+# initial global values | set .httr_oauth
+
+
+l <- get_typical_yt()
+maxResults  <- l$maxResults
+playlistId  <- l$playlistId
+video_id = l$videoId
+base_url <- "https://www.googleapis.com/youtube/v3/videos"
+
+
+api_opts <- list(part = "snippet",
+                 id = video_id,
+                 maxResults = maxResults,
+                 fields="items(snippet(title))",
+                 key = api$api_key)
+
+r <- httr::GET(base_url, query = api_opts) 
+httr::content(r)
+
 ```
 
 
