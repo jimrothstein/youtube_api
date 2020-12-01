@@ -23,8 +23,7 @@ knitr::opts_chunk$set(
 			echo = TRUE,  
 			comment="      ##",  
 			error=TRUE, collapse=TRUE)
-```
-```{r library, include=FALSE		}
+
 library(jimTools)
 library(here)
 library(dplyr)
@@ -43,9 +42,11 @@ jimTools::ren_github(file, dir)
 
 ```{r token}
 api  <- get_api_codes()
+
+## REMOVE?
 # set .httr_oauth  and token
 # default uses scope="ssl
-myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
+### myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
 													app_secret = api$oauth2_secret)
 ```
 
@@ -73,21 +74,22 @@ google_token = base::getOption("google_token")
 config  <- httr::config(google_token)
 
 ```
-works
-```{r the_call_using_yt, eval=FALSE	}
-t  <- tuber::get_comment_threads(filter = c(video_id = l$videoId))
-```
-myway:
-```{r the_call		}
-#  FIX, pageInfo is not specified in fields
-# httr::content(r)$pageInfo$totalResults  # 130
 
+## 1st batch
+```{r get}
 
-comments  <- jr_get_batch_comments(base_url, query, config)
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+
+#comments  <- process_comments(r, comments)
+comments  <- jr_get_batch_comments(base_url, query, config) 
+comments
 ```
+
 
 ```{r}
-
 # ==================================
 ##more batches ?
 # ---- loop till no more token ---
@@ -95,12 +97,12 @@ comments  <- jr_get_batch_comments(base_url, query, config)
 
 get_remainder  <- function(r) {
 query  <- set_query( part="snippet",
-							maxResults =maxResults,
+							maxResults =l$maxResults,
 							mine = FALSE,
 							fields="nextPageToken, items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
 							key = api$api_key,
 						  pageToken = get_nextPageToken(r),
-							videoId = video_Id)
+							videoId = l$videoId)
 
 r <- httr::GET(base_url, 
                query = query,
@@ -123,7 +125,7 @@ while ( !is.null(get_nextPageToken(r)) ) {
 
 } # end loop
 
-
+comments
 saveRDS(comments, file="data/comments.RDS")
 
 t <- as_tibble(comments)

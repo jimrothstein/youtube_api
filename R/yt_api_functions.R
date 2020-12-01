@@ -26,7 +26,7 @@
 #' }
 
 set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
-	.Depreciated("use list instead")
+	.Deprecated("use list instead")
 	query <- list(part = part,
 								maxResults = maxResults, 
 								mine = mine,

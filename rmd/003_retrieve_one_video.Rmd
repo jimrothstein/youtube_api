@@ -1,3 +1,7 @@
+<!--
+    /* vim: set nospell: */ 
+-->
+
 ---
 title: Template for .Rmd
 output: 
@@ -14,15 +18,18 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
-```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
-```
+## /home/jim/code/pkg_yt_api/exclude/003_retrieve_one_video.R
 
-```{r library, include=FALSE		}
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+                      echo = TRUE,  
+                      comment="      ##",  
+                      error=TRUE, 
+                      collapse=TRUE)
+
 library(jimTools)
 library(here)
 ```
-
 
 ```{r render, eval=FALSE	}
 here()
@@ -33,22 +40,13 @@ dir="rmd"
 jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
 ```
+
 ```{r api}
-
-# /* vim: set nospell: */ 
-
-# /home/jim/code/pkg_yt_api/exclude/003_retrieve_one_video.R
-
-#-----------------
-
 if (!exists("api")) api <- get_api_codes()
-
 ```
 
 ```{r initialize}
-
 # initial global values | set .httr_oauth
-
 # don't want to keep typing this
 
 l <- get_typical_yt()
@@ -59,7 +57,6 @@ base_url <- "https://www.googleapis.com/youtube/v3/videos"
 ```
 
 ```{r}
-
 api_opts <- list(part = "snippet",
                  id = video_id,
                  maxResults = maxResults,
@@ -68,17 +65,11 @@ api_opts <- list(part = "snippet",
 
 r <- httr::GET(base_url, query = api_opts) 
 httr::content(r)
-
 ```
 
 ```{r knit_exit()}
 knitr::knit_exit()
 ```
-
-***
-
-
-
 
 
 
