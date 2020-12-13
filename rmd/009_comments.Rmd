@@ -42,12 +42,6 @@ jimTools::ren_github(file, dir)
 
 ```{r token}
 api  <- get_api_codes()
-
-## REMOVE?
-# set .httr_oauth  and token
-# default uses scope="ssl
-### myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
-													app_secret = api$oauth2_secret)
 ```
 
 ```{r initialize}
@@ -114,7 +108,7 @@ r <- httr::GET(base_url,
 process_comments  <- function(r, comments) {
 	json_content <- get_json(r)
 	next_comments <- json_content$items$snippet$topLevelComment$snippet
-	next_comments  <- as_tibble(next_comments)
+	next_comments  <- tibble::as_tibble(next_comments)
 	comments <- rbind(comments, next_comments)
 }
 
@@ -128,11 +122,8 @@ while ( !is.null(get_nextPageToken(r)) ) {
 comments
 saveRDS(comments, file="data/comments.RDS")
 
-t <- as_tibble(comments)
+t <- tibble::as_tibble(comments)
 t
 
 head(knitr::kable(t))
-
-
-
 ```

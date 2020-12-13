@@ -1,4 +1,4 @@
-Package: yt 
+Package: youtube 
 Type: Package
 Title: R functions to use Google Youtube API 
 Version: 0.1.1
@@ -14,7 +14,6 @@ LazyData: true
 Imports: 
     lubridate,
     here,
-    tuber,
     dplyr,
     tibble,
     httr,

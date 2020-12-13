@@ -30,7 +30,6 @@ knitr::opts_chunk$set(
 
 ```{r library, include=FALSE		}
 library(jimTools)
-library(yt)
 library(here)
 library(httr)
 ```
@@ -80,8 +79,8 @@ STOP  -- error 400
 google_token <- oauth2.0_token(
 		endpoint = google_endpoint, 
 		app = jim_app, 
-		#scope = "https://www.googleapis.com/auth/userinfo.profile"
-		scope = ssl
+		scope = "https://www.googleapis.com/auth/userinfo.profile"
+#		scope = ssl
 		# scope = "https://www.googleapis.com/auth/youtube.readonly"
 )
 
@@ -97,13 +96,13 @@ r  <- GET(xxx,
 ```{r get_playlists}
 
 
-query  <- set_query( part="snippet",
+query  <- list( part="snippet",
 							maxResults =2,
 							mine = TRUE,
 							fields = "pageInfo(totalResults)",
 							key = api$api_key)
 
-config <- set_config(token=google_token)
+config <- httr::config(token=google_token)
 
 # ---------
 r <- httr::GET(base_url,

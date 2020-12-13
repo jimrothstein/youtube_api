@@ -60,19 +60,33 @@ exist)
 google_token <- oauth2.0_token(
                   oauth_endpoints("google"), 
                   myapp,
-                  scope = "https://www.googleapis.com/auth/userinfo.profile"
+            scope = "https://www.googleapis.com/auth/youtube.force-ssl"
+#            scope = "https://www.googleapis.com/auth/userinfo.profile"
+#            scope = "https://www.googleapis.com/auth/userinfo.profile"
 )
 
+# try?
+base::options(google_token  = google_token)
+base::getOption("google_token")
 ```
 ```{r use_api}
+config  <- httr::config(token=google_token)
+config
 
 # 4. Use API (auto-refreshs a stale OAuth token)
 req <- GET(
   "https://www.googleapis.com/oauth2/v1/userinfo",
-  config(token = google_token)
+  config = httr::config(token = google_token)
 )
 stop_for_status(req)
 content(req)
+
+
+# show header
+httr::HEAD(
+  "https://www.googleapis.com/oauth2/v1/userinfo",
+  config = httr::config(google_token)
+)
 ```
 
 ```{r one_video}
@@ -95,11 +109,46 @@ api_opts <- list(part = "snippet",
                  fields="items(snippet(title))",
                  key = api$api_key)
 
-r <- httr::GET(base_url, query = api_opts) 
+httr::modify_url(base_url, query = api_opts)
+r"https://www.googleapis.com/youtube/v3/videos?part=snippet&id=bMaCoxOGXPM&max
+     1 httr::content(r)                                                                 │     2 Results=50&fields=items%28snippet%28title%29%29&key=AIzaSyBIpR4Wee8ZvAiofh41leZvC
+     2                                                                                  │     1 j7ReVuXRXE" <- httr::GET(base_url, query = api_opts) 
 httr::content(r)
 
 ```
 
+Given a channelId, returns total number of playlists
+```{r begin}
+api <- get_api_codes()
+api
+
+base_url <- "https://www.googleapis.com/youtube/v3/playlists"
+```
+
+```{r get_count}
+
+query  <- list(
+						part="snippet, contentDetails",
+    				#channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+            mine = true, 
+						max_results=3,
+						fields="pageInfo(totalResults)",
+						key = api$api_key
+						)
+
+config  <- httr::config(token = google_token)
+
+r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
+ 							query= query,
+ 							config = config,
+							) %>% 
+	httr::stop_for_status()
+
+json_content  <- get_json(r)
+count  <- json_content$pageInfo$totalResults
+count
+#jr_get_total_playlists(query) #142
+```
 
 ***
 

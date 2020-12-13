@@ -25,29 +25,27 @@
 #' set_query("......")
 #' }
 
-set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
-	.Deprecated("use list instead")
-	query <- list(part = part,
-								maxResults = maxResults, 
-								mine = mine,
-								fields=fields,
-								key = key,
-								...
-	)
-}
-
-#' ---------
-#' set_config
-#' ---------
-#' @param token permission
-#' @return 
-#' @export
+# set_query <- function(part,maxResults = 50,mine=NULL,fields=NULL,key, ...) {
+#   .Deprecated("use list instead")
+#   query <- list(part = part,
+#                 maxResults = maxResults, 
+#                 mine = mine,
+#                 fields=fields,
+#                 key = key,
+#                 ...
+#   )
+# }
 
 # ---------
-set_config <- function(token) {
-	.Deprecated("no need to use a function")
-	config  <- httr::config(token =token) 
-}
+# set_config
+# ---------
+# @param token permission
+# @return 
+# @export
+# set_config <- function(token) {
+#   .Deprecated("no need to use a function")
+#   config  <- httr::config(token =token) 
+# }
 
 
 #' ----------------
@@ -58,24 +56,23 @@ set_config <- function(token) {
 #' @return json_content
 #' @export
 #'
-# get json of responsed
 get_json <- function(r) {
-	text_content <- httr::content(r,"text")
-	json_content <- text_content %>% jsonlite::fromJSON()
+  text_content <- httr::content(r,"text")
+  json_content <- text_content %>% jsonlite::fromJSON()
 }
 
-#' ----------------
-#' function nextPageToken
-#' ----------------
-#'
-#' @param r response
-#' @return 
-#' @export
-#'
-get_nextPageToken <- function(r) {
-	.Deprecated("no need")
-  httr::content(r)$nextPageToken
-}
+# ----------------
+# function nextPageToken
+# ----------------
+#
+# @param r response
+# @return 
+# @export
+#
+# get_nextPageToken <- function(r) {
+#   .Deprecated("no need")
+#   httr::content(r)$nextPageToken
+# }
 
 
 #'-----------------
@@ -86,9 +83,9 @@ get_nextPageToken <- function(r) {
 #' @export
 
 get_api_codes  <- function() {
-	api  <- list(api_key = Sys.getenv("API_KEY"),
-				 oauth2_id = Sys.getenv("OAUTH2_ID"),
-				 oauth2_secret = Sys.getenv("OAUTH2_SECRET"))
+  api  <- list(api_key = Sys.getenv("API_KEY"),
+               oauth2_id = Sys.getenv("OAUTH2_ID"),
+               oauth2_secret = Sys.getenv("OAUTH2_SECRET"))
 }
 
 #'-----------------

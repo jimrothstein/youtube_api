@@ -4,18 +4,18 @@
 #' @param query list built prior
 #' @param config embed token
 #' @export
-jr_get_batch_comments  <- function(base_url, query, config) {
-	r <- httr::GET(base_url, 
-								query = query,
-								config = config
-								) %>% httr::stop_for_status()
-
-	json_content <- get_json(r)
+# jr_get_batch_comments  <- function(base_url, query, config) {
+  #   r <- httr::GET(base_url, 
+  #                 query = query,
+  #                 config = config
+  #                 ) %>% httr::stop_for_status()
+  # 
+  #   json_content <- get_json(r)
 
 	# to get comments, wade through empty levels
-	comments <- json_content$items$snippet$topLevelComment$snippet
-	comments  <- as_tibble(comments)
-}
+#   comments <- json_content$items$snippet$topLevelComment$snippet
+#   comments  <- tibble::as_tibble(comments)
+# }
 
 #' ---------
 #' jr_get_batch_videos
@@ -27,10 +27,10 @@ jr_get_batch_comments  <- function(base_url, query, config) {
 #' @return
 #' @export
 
-jr_get_batch_videos  <- function(base_url,query,config) {
-			# get a block (upto maxResults)
-			r <- httr::GET(url = base_url, 
-											query= query, 
-											config = config
-			) %>% httr::stop_for_status()
-}
+# jr_get_batch_videos  <- function(base_url,query,config) {
+# get a block (upto maxResults)
+#       r <- httr::GET(url = base_url, 
+#                       query= query, 
+#                       config = config
+#       ) %>% httr::stop_for_status()
+# }

@@ -37,10 +37,12 @@ Given a channelId, returns total number of playlists
 ---- set once ----
 ```{r begin}
 api <- get_api_codes()
-myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
-													app_secret = api$oauth2_secret
-)
-google_token  <- base::getOption("google_token")
+api
+# myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
+# app_secret = api$oauth2_secret
+# )
+
+#google_token  <- base::getOption("google_token")
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 ```
 
@@ -52,13 +54,14 @@ query  <- list(
     				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
 						max_results=3,
 						fields="pageInfo(totalResults)",
-						key = api$key
+						key = api$api_key
 						)
 
-# easier to use httr:: (vs tuber's)
+config  <- httr::config(token = google_token)
+
 r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
- 							httr::config(token= getOption("google_token"))
+ 							config = config,
 							) %>% 
 	httr::stop_for_status()
 
