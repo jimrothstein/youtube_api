@@ -43,12 +43,14 @@ oauth_endpoints("google")
 ```{r register}
 
 # 2. Register an application at https://cloud.google.com/console#/project
-#    Replace key and secret below.
+#    Replace key and secret below (use ~/.R_environ)
 #    NOTE:  google calls this key as "Client ID"
 myapp <- oauth_app("google",
-key="254738439744-0rl7a94t125fbkam9nlkg63p1sm1ski6.apps.googleusercontent.com",
-secret="OjEJig9Mj1QIoo4K07tkp7_B"
+  key  <- Sys.getenv("OAUTH2_ID"),
+  secret  <- Sys.getenv("OAUTH2_SECRET")
 )
+# Sys.getenv("API_KEY")
+
 myapp
 ```
 ```{r .httr-oauth}
@@ -85,7 +87,7 @@ content(req)
 # show header
 httr::HEAD(
   "https://www.googleapis.com/oauth2/v1/userinfo",
-  config = httr::config(google_token)
+  config = httr::config(token = google_token)
 )
 ```
 
