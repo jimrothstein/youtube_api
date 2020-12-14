@@ -72,6 +72,11 @@ config  <- httr::config(google_token)
 ## 1st batch
 ```{r get}
 
+r  <- GET(base_url, query = query, config(token= auth.code))
+stop_for_status(r)
+httr::content(r)
+str(httr::content(r))
+
 r <- httr::GET(base_url, 
                query = query,
 							 config = config

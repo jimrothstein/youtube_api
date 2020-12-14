@@ -113,7 +113,9 @@ auth.code <- oauth2.0_token(
               app = myapp,
          scope = c("https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/youtube"  # manage
+                "https://www.googleapis.com/auth/youtube",  # manage
+"https://www.googleapis.com/auth/youtube.readonly",
+"https://www.googleapis.com/auth/youtube.force-ssl"
          )
 )
 
@@ -160,19 +162,19 @@ base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 
 query  <- list(
 						part="snippet, contentDetails",
-    				#channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
             mine = TRUE, 
 						max_results=3,
 						fields="pageInfo(totalResults)",
 						key = api$api_key
 						)
 
-config  <- httr::config(token = google_token)
-config
+# config  <- httr::config(token = google_token)
+# config
 
 r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
- 							config = config,
+ 							config = config(token = auth.code),
 							) %>% 
 	httr::stop_for_status()
 
@@ -186,6 +188,48 @@ count
 httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
  							config = config)
+```
+Try Comments !
+```{r token}
+api  <- get_api_codes()
+
+base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
+l <- get_typical_yt()
+
+#playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
+
+# fields , careful if split on mutliple lines, use paste
+query  <- list(
+	part="snippet,replies", 
+	maxResults =l$maxResults, 
+	fields=paste(sep=", ", "nextPageToken", 
+			 "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
+			 ),
+	key = api$api_key, 
+	pageToken = NULL, 
+	videoId = l$videoId)
+
+# google_token = base::getOption("google_token") 
+# config  <- httr::config(google_token)
+
+```
+
+## 1st batch
+```{r get}
+
+r  <- GET(base_url, query = query, config(token= auth.code))
+stop_for_status(r)
+httr::content(r)
+str(httr::content(r))
+
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+
+#comments  <- process_comments(r, comments)
+comments  <- jr_get_batch_comments(base_url, query, config) 
+comments
 ```
 
 ***
