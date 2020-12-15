@@ -30,6 +30,7 @@ Endpoints
 # 1. Find OAuth settings for google:
 #    https://developers.google.com/accounts/docs/OAuth2InstalledApp
 oauth_endpoints("google")
+
 ```
 
 
@@ -44,13 +45,14 @@ myapp <- oauth_app("google",
   secret  <- Sys.getenv("OAUTH2_SECRET")
 )
 
+
 # Sys.getenv("API_KEY")
 # myapp
 ```
+
+
   - Create .httr-oauth (binary) in project root.
   - Best to run in xiwi -T st  b/c need X11 for user to approve
-
-  - ONCE .httr_oauth created,  oauth2.0_token() will find it, refresh it and without needed X11 or user approval. 
 ```{r .httr-oauth}
 
 # Simplest Scope here.
@@ -147,9 +149,83 @@ stop_for_status(r)
 httr::content(r)
 str(httr::content(r))
 ```
+TODO - not working, missing , in list()  -- is it TRUE, TRUE?
+Given a channelId, returns total number of playlists
+```{r playlist_count}
+api <- get_api_codes()
+api
 
-STOP HERE
-more examples, see 00070 or other files
+base_url <- "https://www.googleapis.com/youtube/v3/playlists"
+
+
+query  <- list(
+						part="snippet, contentDetails",
+    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+            mine = TRUE, 
+						maxResults=3,
+						fields="pageInfo(totalResults)",
+						key = api$api_key
+						)
+
+r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
+ 							query= query,
+ 							config = config(token = auth.code),
+							) %>% 
+	httr::stop_for_status()
+
+json_content  <- get_json(r)
+count  <- json_content$pageInfo$totalResults
+count
+#jr_get_total_playlists(query) #142
+
+
+# see HEAD?
+httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
+ 							query= query,
+ 							config = config(token=auth.code))
+```
+
+
+Comments
+```{r comments}
+
+api  <- get_api_codes()
+base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
+l <- get_typical_yt()
+
+#playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
+
+# fields , careful if split on mutliple lines, use paste
+query  <- list(
+	part="snippet,replies", 
+	maxResults =l$maxResults, 
+	fields=paste(sep=", ", "nextPageToken", 
+			 "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
+			 ),
+	key = api$api_key, 
+	pageToken = NULL, 
+	videoId = l$videoId)
+
+# google_token = base::getOption("google_token") 
+# config  <- httr::config(google_token)
+
+```
+
+## 1st batch
+```{r get}
+
+r  <- GET(base_url, query = query, config(token= auth.code))
+stop_for_status(r)
+httr::content(r)
+str(httr::content(r))
+
+
+#comments  <- process_comments(r, comments)
+comments  <- jr_get_batch_comments(base_url, query, config) 
+comments
+```
+
+***
 
 ```{r knit_exit()} 
 knitr::knit_exit()

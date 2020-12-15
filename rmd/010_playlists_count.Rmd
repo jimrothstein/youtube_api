@@ -58,6 +58,7 @@ query  <- list(
 						)
 
 config  <- httr::config(token = google_token)
+config  <- httr::config(token = auth.code) 
 
 r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,

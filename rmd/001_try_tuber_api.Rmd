@@ -14,7 +14,8 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
-## CLEAN UP!!
+## (ARCHIVED) uses tuber::
+##   Keep for any possible future use.
 
 
 ```{r setup, include=FALSE		}
