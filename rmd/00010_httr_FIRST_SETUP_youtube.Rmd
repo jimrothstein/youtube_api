@@ -10,6 +10,21 @@ toc_depth:  1
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
 ---
+
+
+
+SETUP !
+- once auth.code is stored in Options() s/d not need to be here
+
+Troubleshooting
+HEAD shows what is being sent (see the simple error?)
+httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
+ 							query= query,
+ 							config = config,
+							) 
+
+
+
 REF : 
 https://www.r-bloggers.com/2019/01/how-to-authenticate-using-oauth2-through-r-2/
 ```{r setup, include=FALSE		}
@@ -44,15 +59,13 @@ myapp <- oauth_app("google",
   key  <- Sys.getenv("OAUTH2_ID"),
   secret  <- Sys.getenv("OAUTH2_SECRET")
 )
-
-
-# Sys.getenv("API_KEY")
-# myapp
+myapp
 ```
 
-
+## SCOPES, auth.code
   - Create .httr-oauth (binary) in project root.
   - Best to run in xiwi -T st  b/c need X11 for user to approve
+
 ```{r .httr-oauth}
 
 # Simplest Scope here.
@@ -60,8 +73,6 @@ auth.code <- oauth2.0_token(
               endpoint = oauth_endpoints("google"),
               app = myapp,
               scope = "https://www.googleapis.com/auth/userinfo.profile")
-
-
 
 ```
 
@@ -82,6 +93,7 @@ httr::HEAD(
 )
 ```
 
+## SCOPE 2  
   - Need broader scope to access email
 ```{r get_email}
 auth.code <- oauth2.0_token(
@@ -101,7 +113,9 @@ stop_for_status(req)
 str(content(req))
 ```
 
+##  SCOPE 3 (BEST)
   - USE THIS auth.code for most work
+  - must be in X11  
   - Add scope for various youtube access.
   - youtube.force-ssl needed to retrieve user's playists, videos in each
 ```{r youtube_scopes}
@@ -117,9 +131,17 @@ auth.code <- oauth2.0_token(
          )
 )
 
-
 ```
 
+KEY STEP  ...  save auth.code
+-  later retrieve getOption("auth.code")
+
+```{r save_auth.code}
+base::options("auth.code" = auth.code)
+```
+
+
+## Examples
 ```{r one_video}
 
 # prep for GET
