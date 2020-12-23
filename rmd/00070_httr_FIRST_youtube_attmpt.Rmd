@@ -101,6 +101,7 @@ stop_for_status(req)
 str(content(req))
 ```
 
+  - USE THIS auth.code for most work
   - Add scope for various youtube access.
   - youtube.force-ssl needed to retrieve user's playists, videos in each
 ```{r youtube_scopes}
@@ -115,6 +116,7 @@ auth.code <- oauth2.0_token(
 "https://www.googleapis.com/auth/youtube.force-ssl"
          )
 )
+
 
 ```
 
