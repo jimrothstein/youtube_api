@@ -28,7 +28,6 @@ knitr::opts_chunk$set(
                       collapse=TRUE)
 
 library(jimTools)
-library(here)
 ```
 
 ```{r render, eval=FALSE	}
