@@ -24,19 +24,7 @@ knitr::opts_chunk$set(
     comment = "      ##",
     error = TRUE, collapse = TRUE)
 
-library(jimTools)
-library(dplyr)
-library(magrittr)
 load_all()
-```
-```{r render, eval=FALSE	}
-here()
-file <- "rmd/009_comments.Rmd"
-file  <- basename(file)
-dir="rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
 ```
 
 ```{r api_key}
@@ -75,43 +63,40 @@ auth.code
 
 ## 1st batch
 ```{r get}
+r  <- httr::GET(base_url, 
+                query = query, 
+                httr::config(token= auth.code))  %>% 
+      httr::stop_for_status(r)
 
+# return json content
+json_content<- get_json(r)
 
-r  <- GET(base_url, query = query, config(token= auth.code))
-stop_for_status(r)
-httr::content(r)
-str(httr::content(r))
+comments <- json_content$items$snippet$topLevelComment$snippet
+comments
 
-r <- httr::GET(base_url, 
-               query = query,
-							 config = config
-               ) %>% httr::stop_for_status()
-
-#comments  <- process_comments(r, comments)
-comments  <- jr_get_batch_comments(base_url, query, config) 
+# tibble
+comments <- tibble::as_tibble(comments)
 comments
 ```
 
 
 ```{r}
 # ==================================
-##more batches ?
+##  more batches ?
 # ---- loop till no more token ---
 # ==================================
 
-get_remainder  <- function(r) {
-query  <- set_query( part="snippet",
-							maxResults =l$maxResults,
-							mine = FALSE,
-							fields="nextPageToken, items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
-							key = api$api_key,
-						  pageToken = get_nextPageToken(r),
-							videoId = l$videoId)
 
-r <- httr::GET(base_url, 
+get_remainder  <- function(r) {
+
+  # only change:
+  query$pageToken  <- httr::content(r)$nextPageToken
+
+
+  r <- httr::GET(base_url, 
                query = query,
-							 config = config
-               ) %>% httr::stop_for_status()
+							 config = httr::config(token = auth.code))  %>% 
+               httr::stop_for_status()
 }
 
 
@@ -123,17 +108,13 @@ process_comments  <- function(r, comments) {
 }
 
 # get remainder of videos
-while ( !is.null(get_nextPageToken(r)) ) {
+while ( !is.null(httr::content(r)$nextPageToken )) {
 	r  <- get_remainder(r)
 	comments  <- process_comments(r, comments)
 
 } # end loop
 
 comments
+head(comments)
 saveRDS(comments, file="data/comments.RDS")
-
-t <- tibble::as_tibble(comments)
-t
-
-head(knitr::kable(t))
 ```

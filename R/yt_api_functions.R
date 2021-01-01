@@ -49,18 +49,6 @@
 
 
 
-# ----------------
-# function nextPageToken
-# ----------------
-#
-# @param r response
-# @return 
-# @export
-#
-# get_nextPageToken <- function(r) {
-#   .Deprecated("no need")
-#   httr::content(r)$nextPageToken
-# }
 
 
 #'-----------------
