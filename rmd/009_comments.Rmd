@@ -1,0 +1,139 @@
+---
+title: Template for .Rmd
+output: 
+  pdf_document:
+    latex_engine: xelatex
+    toc:  TRUE
+    toc_depth:  1
+fontsize: 12pt
+geometry: margin=0.5in,top=0.25in
+#  md_document:
+#  html_document:
+#    toc: true
+#  	toc_float: true
+#    css: styles.css
+---
+
+# ======================================
+#### 001_get_comments, for GIVEN video
+# ======================================
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    comment = "      ##",
+    error = TRUE, collapse = TRUE)
+
+library(jimTools)
+library(dplyr)
+library(magrittr)
+load_all()
+```
+```{r render, eval=FALSE	}
+here()
+file <- "rmd/009_comments.Rmd"
+file  <- basename(file)
+dir="rmd"
+
+jimTools::ren_pdf(file,dir)
+jimTools::ren_github(file, dir)
+```
+
+```{r api_key}
+api  <- get_api_codes()
+api
+```
+
+```{r initialize}
+base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
+l <- get_typical_yt()
+
+#playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
+
+```
+
+```{r query}
+# fields , careful if split on mutliple lines, use paste
+query  <- list(
+  part = "snippet,replies",
+  maxResults = l$maxResults,
+  fields = paste(sep = ", ", "nextPageToken",
+  "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
+   ),
+  key = api$api_key,
+  pageToken = NULL,
+  videoId = l$videoId)
+
+```
+Auth_code
+```{r get_auth_code}
+
+auth.code  <- getOption("auth.code")
+auth.code
+
+```
+
+## 1st batch
+```{r get}
+
+
+r  <- GET(base_url, query = query, config(token= auth.code))
+stop_for_status(r)
+httr::content(r)
+str(httr::content(r))
+
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+
+#comments  <- process_comments(r, comments)
+comments  <- jr_get_batch_comments(base_url, query, config) 
+comments
+```
+
+
+```{r}
+# ==================================
+##more batches ?
+# ---- loop till no more token ---
+# ==================================
+
+get_remainder  <- function(r) {
+query  <- set_query( part="snippet",
+							maxResults =l$maxResults,
+							mine = FALSE,
+							fields="nextPageToken, items(snippet(topLevelComment(snippet(videoId,textDisplay))))",
+							key = api$api_key,
+						  pageToken = get_nextPageToken(r),
+							videoId = l$videoId)
+
+r <- httr::GET(base_url, 
+               query = query,
+							 config = config
+               ) %>% httr::stop_for_status()
+}
+
+
+process_comments  <- function(r, comments) {
+	json_content <- get_json(r)
+	next_comments <- json_content$items$snippet$topLevelComment$snippet
+	next_comments  <- tibble::as_tibble(next_comments)
+	comments <- rbind(comments, next_comments)
+}
+
+# get remainder of videos
+while ( !is.null(get_nextPageToken(r)) ) {
+	r  <- get_remainder(r)
+	comments  <- process_comments(r, comments)
+
+} # end loop
+
+comments
+saveRDS(comments, file="data/comments.RDS")
+
+t <- tibble::as_tibble(comments)
+t
+
+head(knitr::kable(t))
+```
