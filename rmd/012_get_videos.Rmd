@@ -28,7 +28,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											collapse=TRUE)
 ```
 ```{r library, include=FALSE		}
-library(jimTools)
 load_all()
 ```
 
@@ -42,30 +41,44 @@ jimTools::ren_pdf(file,dir)
 jimTools::ren_github(file, dir)
 ```
 
-```{r token}
-api  <- get_api_codes()
-# set .httr_oauth  and token
-myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
-													app_secret = api$oauth2_secret)
-```
 ```{r initialize}
+api  <- get_api_codes()
+l  <- get_typical_values()
 base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
-playlistId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc "
+l$playlistId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc "
 
-l <- get_typical_yt()
+
 ```
 
 ```{r query}
-query  <- list(part="snippet",
-					maxResults=l$maxResults,
-					playlistId=l$playlistId,	
-					pageToken="",
-					fields=paste(sep=", ", "nextPageToken", 
-						"items(snippet(title, description, position, playlistId))"),
-          key=api$api_key)
 
-config  <-  httr::config(token=getOption("google_token"))
+query  <- list(part="snippet",  
+maxResults=l$maxResults,  
+playlistId= l$playlistId,	
+#	pageToken="",
+fields=paste(sep=", ",   
+"nextPageToken",   
+"items(snippet(title, description, position ))"  
+  ),  
+ key=api$api_key)  
+
 ```
+
+```{r}
+r  <- httr::HEAD(url =  base_url,
+                query = query,
+                config = httr::config(token = auth.code))
+
+r
+```
+```{r}
+r  <- httr::GET(url =  base_url,
+                query = query,
+                config = httr::config(token = auth.code))
+
+r
+```
+
 
 
 ==========

@@ -14,13 +14,15 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
+GIVEN a channel ID  (mine) , return total number of playlists.
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  comment="      ##",  error=TRUE, collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE,  
+                      comment="      ##",  
+                      error=TRUE, 
+                      collapse=TRUE)
 ```
 
 ```{r library, include=FALSE		}
-library(jimTools)
-library(here)
 load_all()
 ```
 
@@ -29,47 +31,43 @@ here()
 file <- "010_playlists_count.Rmd"
 file  <- basename(file)
 dir="rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
 ```
-Given a channelId, returns total number of playlists
----- set once ----
+
 ```{r begin}
 api <- get_api_codes()
-api
-auth.code  <- getOption("auth.code")
-auth.code
+if (!exists("l")) l  <- get_typical_values()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 ```
 
+
+Auth_code
+```{r get_auth_code}
+auth.code  <- getOption("auth.code")
+auth.code
+```
 ```{r get_count}
-
-
-
 query  <- list(
-						part="contentDetails",
-    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
-						max_results=3,
-						fields="pageInfo(totalResults)",
-						key = api$api_key
-						)
-
-config  <- httr::config(token = auth.code) 
-config
+  part="snippet",
+ 	channel_id="UClB5qWyXejlAwwkDAzJis-Q",
+	max_results=50,
+	fields="pageInfo(totalResults)",
+	key = api$api_key
+	)
 
 r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
- 							config = config
+ 							config = httr::config(token = auth.code)
 							) %>% 
 	httr::stop_for_status()
 
 json_content  <- get_json(r)
 count  <- json_content$pageInfo$totalResults
-count
-#jr_get_total_playlists(query) #142
+count #16 is too low
+
 ```
+
 ```{r}
+```
 
 
 ```{r knit_exit()}

@@ -5,6 +5,7 @@
 ---
 title: Template for .Rmd
 output: 
+  html_document:
   pdf_document:
     latex_engine: xelatex
     toc:  TRUE
@@ -36,8 +37,6 @@ file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
 file  <- basename(file)
 dir="rmd"
 
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
 ```
 
 ```{r api}
@@ -48,10 +47,12 @@ if (!exists("api")) api <- get_api_codes()
 # initial global values | set .httr_oauth
 # don't want to keep typing this
 
-l <- get_typical_yt()
-maxResults  <- l$maxResults
-playlistId  <- l$playlistId
-video_id = l$videoId
+l <- get_typical_values()
+
+  maxResults  <- l$maxResults
+  playlistId  <- l$playlistId
+  video_id = l$videoId
+
 base_url <- "https://www.googleapis.com/youtube/v3/videos"
 ```
 

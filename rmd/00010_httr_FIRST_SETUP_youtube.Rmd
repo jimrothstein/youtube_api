@@ -147,7 +147,7 @@ base::options("auth.code" = auth.code)
 # prep for GET
 if (!exists("api")) api <- get_api_codes()
 
-l <- get_typical_yt()
+l <- get_typical_values()
 maxResults  <- l$maxResults
 playlistId  <- l$playlistId
 video_id = l$videoId
@@ -215,7 +215,7 @@ Comments
 
 api  <- get_api_codes()
 base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
-l <- get_typical_yt()
+l <- get_typical_values()
 
 #playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
 

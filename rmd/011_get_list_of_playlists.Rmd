@@ -27,10 +27,6 @@ knitr::opts_chunk$set(echo = TRUE,
 ```
 
 ```{r library, include=FALSE		}
-library(jimTools)
-library(here)
-library(dplyr)
-library(magrittr)
 load_all()
 ```
 ```{r render, eval=FALSE	}
@@ -39,19 +35,17 @@ file <- "011_playlists.Rmd"
 file  <- basename(file)
 dir="rmd"
 
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
-```
- ---- set once ----
-```{r token}
-api <- get_api_codes()
-myapp  <- tuber::yt_oauth(app_id = api$oauth2_id,
-													app_secret = api$oauth2_secret
-)
 ```
 ```{r initialize}
-l <- get_typical_yt()
+if (!exists("api")) api  <- get_api_codes()
+if (!exists("l"))   l    <- get_typical_values()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
+```
+
+Auth_code
+```{r get_auth_code}
+auth.code  <- getOption("auth.code")
+auth.code
 ```
 
 ```{r get_count_playlists}
@@ -59,31 +53,48 @@ base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 ```
 
 
+TODO - not returning nextPageToken (actually, it is, just toofwe playlists!)
 ```{r query}
 query  <- list( 
 			part="snippet",
 			channelId = l$channelId,
 			maxResults = l$maxResults,
-			fields=paste("nextPageToken",
-				"items(id,snippet(title,description,channelId,publishedAt))",
-				sep=", "),
+      fields=paste(sep=",", 
+                   "nextPageToken",
+                  "items(id,snippet(title,description,channelId,publishedAt))"
+                  ),
 			key = api$api_key,
 			pageToken = NULL)
 
-config  <- httr::config(token=getOption("google_token"))
+```
+```{r HEAD}
+
+r <- httr::HEAD(base_url, 
+           query = query,
+					 config = httr::config( token = auth.code))
+r
+
 ```
 
 ```{r call }
 r <- httr::GET(base_url, 
            query = query,
-					 config = config) %>% 
+					 config = httr::config( token = auth.code)) %>% 
 						 httr::stop_for_status()
 
+           r
 json_content <- get_json(r)
 
 # playlists is data.frame, 50 x 4
 playlists <- json_content$items$snippet
+t   <- tibble::as_tibble(playlists)
+t
+
 ```
+```{r next}
+
+```
+
 
 
 ```{r repeat}

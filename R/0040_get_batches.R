@@ -1,10 +1,10 @@
-#' jr_get_batch_comments Given videoId, returns one batch comments 
+#' get_batch_comments Given videoId, returns one batch comments 
 
 #' @param base_url url for Google api
 #' @param query list built prior
 #' @param config embed token
 #' @export
-# jr_get_batch_comments  <- function(base_url, query, config) {
+# get_batch_comments  <- function(base_url, query, config) {
   #   r <- httr::GET(base_url, 
   #                 query = query,
   #                 config = config
@@ -18,7 +18,7 @@
 # }
 
 #' ---------
-#' jr_get_batch_videos
+#' get_batch_videos
 #' ---------
 #'
 #' @param base_url ur_provide_by_api
@@ -27,7 +27,7 @@
 #' @return
 #' @export
 
-# jr_get_batch_videos  <- function(base_url,query,config) {
+# get_batch_videos  <- function(base_url,query,config) {
 # get a block (upto maxResults)
 #       r <- httr::GET(url = base_url, 
 #                       query= query, 

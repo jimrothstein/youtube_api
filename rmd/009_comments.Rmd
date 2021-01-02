@@ -28,14 +28,15 @@ load_all()
 ```
 
 ```{r api_key}
-api  <- get_api_codes()
+if (!exists("api")) api <- get_api_codes()
 api
 ```
 
 ```{r initialize}
 base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
-l <- get_typical_yt()
+if (!exists("l")) l  <- get_typical_values()
 
+# spare:
 #playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
 
 ```
@@ -53,20 +54,21 @@ query  <- list(
   videoId = l$videoId)
 
 ```
+
 Auth_code
 ```{r get_auth_code}
-
 auth.code  <- getOption("auth.code")
 auth.code
-
 ```
 
 ## 1st batch
 ```{r get}
 r  <- httr::GET(base_url, 
                 query = query, 
-                httr::config(token= auth.code))  %>% 
-      httr::stop_for_status(r)
+                httr::config(token= auth.code))  
+
+r
+httr::stop_for_status(r)
 
 # return json content
 json_content<- get_json(r)
