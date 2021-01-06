@@ -14,16 +14,16 @@ geometry: margin=0.5in,top=0.25in
 #    css: styles.css
 ---
 
-# ======================================
+## ======================================
 #### 001_get_comments, for GIVEN video
-# ======================================
+## ======================================
 
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(
     echo = TRUE,
     comment = "      ##",
-    error = TRUE, collapse = TRUE)
-
+    error = TRUE, 
+    collapse = TRUE)
 load_all()
 ```
 
@@ -61,62 +61,101 @@ auth.code  <- getOption("auth.code")
 auth.code
 ```
 
+## HELPER:
+
+More batches?
+*  Helper function: 
+*  Get next page token
+*  Run GET again,  return next r
+
+```{r get_batch}
+get_batch  <- function() {
+  r <- httr::GET(base_url, 
+  query = query,
+  config = httr::config(token = auth.code))  %>% 
+  httr::stop_for_status()
+}
+```
+From r, process comments
+*  Helper function
+*  Process comments into tibblel
+*  Rbind with prior batches, return 
+
+```{r process_comments}
+process_comments  <- function(r, comments = tibble::tibble()) {
+  json_content <- get_json(r)
+  next_comments <- json_content$items$snippet$topLevelComment$snippet
+  #browser()
+  next_comments  <- tibble::as_tibble(next_comments)
+  comments <- rbind(comments, next_comments)
+}
+```
+***
+
+
 ## 1st batch
 ```{r get}
-r  <- httr::GET(base_url, 
-                query = query, 
-                httr::config(token= auth.code))  
+comments  <- NULL
+r  <- get_batch()
 
 r
-httr::stop_for_status(r)
 
-# return json content
-json_content<- get_json(r)
-
-comments <- json_content$items$snippet$topLevelComment$snippet
-comments
-
-# tibble
-comments <- tibble::as_tibble(comments)
-comments
+comments  <- process_comments(r)
 ```
 
+Main loop:   remaining batches
+```{r main_loop}
 
-```{r}
-# ==================================
-##  more batches ?
-# ---- loop till no more token ---
-# ==================================
-
-
-get_remainder  <- function(r) {
-
-  # only change:
-  query$pageToken  <- httr::content(r)$nextPageToken
-
-
-  r <- httr::GET(base_url, 
-               query = query,
-							 config = httr::config(token = auth.code))  %>% 
-               httr::stop_for_status()
-}
-
-
-process_comments  <- function(r, comments) {
-	json_content <- get_json(r)
-	next_comments <- json_content$items$snippet$topLevelComment$snippet
-	next_comments  <- tibble::as_tibble(next_comments)
-	comments <- rbind(comments, next_comments)
-}
-
-# get remainder of videos
 while ( !is.null(httr::content(r)$nextPageToken )) {
-	r  <- get_remainder(r)
+  query$pageToken  <- httr::content(r)$nextPageToken
+	r  <- get_batch()
 	comments  <- process_comments(r, comments)
 
 } # end loop
+```
+```{r examine_comments}
 
 comments
 head(comments)
-saveRDS(comments, file="data/comments.RDS")
+saveRDS(comments, file=here("data","comments.RDS"))
+```
+
+
+
+
+
+```{r trick_tibble, eval=FALSE  , include=FALSE }
+
+# Observe,  rind (A, B)
+# A is empty tibble,
+# B is tibble
+# Then rbind success and returns combined
+
+comments  <- tibble::tibble()
+comments
+new_comments  <- tibble::tribble(
+                         ~x, ~y,
+                         1, 0,
+                         0, 1)
+
+z   <- rbind(comments, new_comments)
+z
+x
+```
+
+
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- here("", "")
+file  <- "rmd/009_comments.Rmd"
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
 ```
