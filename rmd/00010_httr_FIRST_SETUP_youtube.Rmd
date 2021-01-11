@@ -12,7 +12,6 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 
-
 SETUP !
 - once auth.code is stored in Options() s/d not need to be here
 
@@ -22,8 +21,6 @@ httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
  							config = config,
 							) 
-
-
 
 REF : 
 https://www.r-bloggers.com/2019/01/how-to-authenticate-using-oauth2-through-r-2/
@@ -47,8 +44,6 @@ Endpoints
 oauth_endpoints("google")
 
 ```
-
-
   - Register myapp with Google
   - Uncomment if want to see
 ```{r register}
@@ -66,9 +61,8 @@ myapp
   - Create .httr-oauth (binary) in project root.
   - Best to run in xiwi -T st  b/c need X11 for user to approve
 
+Simplest Scope
 ```{r .httr-oauth}
-
-# Simplest Scope here.
 auth.code <- oauth2.0_token(
               endpoint = oauth_endpoints("google"),
               app = myapp,
@@ -135,8 +129,10 @@ auth.code <- oauth2.0_token(
 
 KEY STEP  ...  save auth.code
 -  later retrieve getOption("auth.code")
+-  NOTE:  auth.code should not be NULL
 
 ```{r save_auth.code}
+auth.code
 base::options("auth.code" = auth.code)
 ```
 

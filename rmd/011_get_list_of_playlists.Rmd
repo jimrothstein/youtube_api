@@ -55,16 +55,18 @@ auth.code
 
 TODO - not returning nextPageToken (actually, it is, just toofwe playlists!)
 ```{r query}
+query  <- NULL
 query  <- list( 
 			part="snippet",
 			channelId = l$channelId,
 			maxResults = l$maxResults,
       fields=paste(sep=",", 
                    "nextPageToken",
-                  "items(id,snippet(title,description,channelId,publishedAt))"
+                  "items(id,snippet(title,description,publishedAt))"
                   ),
 			key = api$api_key,
 			pageToken = NULL)
+query
 
 ```
 ```{r HEAD}
@@ -76,43 +78,54 @@ r
 
 ```
 
-```{r call }
-r <- httr::GET(base_url, 
-           query = query,
-					 config = httr::config( token = auth.code)) %>% 
-						 httr::stop_for_status()
+## HELPER:
 
-           r
-json_content <- get_json(r)
+More batches?
+*  Helper function: 
+*  Get next page token
+*  Run GET again,  return next r
 
-# playlists is data.frame, 50 x 4
-playlists <- json_content$items$snippet
-t   <- tibble::as_tibble(playlists)
-t
-
-```
-```{r next}
-
-```
-
-
-
-```{r repeat}
-while ( !is.null(get_nextPageToken(r)) ) {
-		# only 1 change
-		query$pageToken <- get_nextPageToken(r)
-
-		r <- httr::GET(base_url, 
-									query = query,
-									config = config 
-									)
-
-		json_content <- get_json(r)
-		next_playlists <- json_content$items$snippet
-
-		playlists <- rbind(playlists, next_playlists)
+```{r get_batch}
+get_batch  <- function() {
+  r <- httr::GET(base_url, 
+  query = query,
+  config = httr::config(token = auth.code))  %>% 
+  httr::stop_for_status()
 }
 ```
+From r, process comments
+*  Helper function
+*  Process comments into tibblel
+*  Rbind with prior batches, return 
+
+```{r process_comments}
+process_playlists  <- function(r, playlists = tibble::tibble()) {
+  json_content <- get_json(r)
+  next_playlists <- cbind(playlistId =json_content$items$id,
+                          json_content$items$snippet)
+  next_playlists <- tibble::as_tibble(next_playlists)
+  playlists <- rbind(playlists, next_playlists)
+}
+```
+***
+```{r call }
+r  <- get_batch()
+playlists  <- process_playlists(r)
+playlists
+
+```
+```{r}
+httr::content(r)$nextPageToken
+
+while ( !is.null(httr::content(r)$nextPageToken )) {
+  query$pageToken  <- httr::content(r)$nextPageToken
+	r  <- get_batch()
+	playlists  <- process_playlists(r, playlists)
+
+} # end loop
+playlists
+```
+
 ```{r}
 saveRDS(playlists, file=here("data", "playlists.RDS"))
 ```
@@ -124,9 +137,10 @@ post-processing
 playlists <- playlists %>% 
 	dplyr::mutate(date= lubridate::as_date(
 									lubridate::as_datetime(publishedAt))) %>% 
-	dplyr::select(-c(channelId,publishedAt))
+	dplyr::select(-c(publishedAt))
 
 playlists
-
-
+# example playlistId  
+playlists$playlistId[[2]]
 ```
+

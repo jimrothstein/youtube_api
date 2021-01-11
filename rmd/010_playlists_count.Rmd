@@ -20,18 +20,10 @@ knitr::opts_chunk$set(echo = TRUE,
                       comment="      ##",  
                       error=TRUE, 
                       collapse=TRUE)
-```
-
-```{r library, include=FALSE		}
 load_all()
 ```
 
-```{r render, eval=FALSE	}
-here()
-file <- "010_playlists_count.Rmd"
-file  <- basename(file)
-dir="rmd"
-```
+
 
 ```{r begin}
 api <- get_api_codes()
@@ -42,23 +34,29 @@ base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 
 Auth_code
 ```{r get_auth_code}
+old  <- auth.code
 auth.code  <- getOption("auth.code")
 auth.code
 ```
+
+TODO - count = 16 is wrong!
 ```{r get_count}
 query  <- list(
   part="snippet",
- 	channel_id="UClB5qWyXejlAwwkDAzJis-Q",
-	max_results=50,
-	fields="pageInfo(totalResults)",
-	key = api$api_key
+ 	channelId="UClB5qWyXejlAwwkDAzJis-Q",
+  #mine = 'true',
+	max_results=5,
+  fields="pageInfo(totalResults)",
+	key=api$api_key
 	)
 
-r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
+r  <- httr::GET(url = base_url,
  							query= query,
  							config = httr::config(token = auth.code)
-							) %>% 
-	httr::stop_for_status()
+							)
+
+
+httr::stop_for_status(r)
 
 json_content  <- get_json(r)
 count  <- json_content$pageInfo$totalResults
@@ -67,9 +65,28 @@ count #16 is too low
 ```
 
 ```{r}
+r  <- httr::HEAD(url = base_url,
+ 							query= query,
+ 							config = httr::config(token = auth.code)
+							) 
+r
 ```
 
 
 ```{r knit_exit()}
 knitr::knit_exit()
+```
+```{r render, eval=FALSE, include=FALSE 	} 
+# TODO:  file is found when knitr runs (see above)
+
+# file must be of form:
+# dir/name_of_this_file    where dir is relative to project root
+
+file  <- "rmd/010_playlists.Rmd"
+
+# in general, pdf will look nicer
+rmarkdown::render(file,
+                  #output_format = "pdf_document",
+                  output_format = "html_document",
+                  output_file = "~/Downloads/print_and_delete/out")
 ```
