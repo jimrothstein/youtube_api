@@ -1,22 +1,27 @@
 ---
-title: Template for .Rmd
-output: 
-  pdf_document:
-    latex_engine: xelatex
-    toc:  TRUE
-    toc_depth:  1
-fontsize: 12pt
-geometry: margin=0.5in,top=0.25in
-#  md_document:
-#  html_document:
-#    toc: true
-#  	toc_float: true
-#    css: styles.css
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
 ---
 
 ---- PURPOSE ----
 given ONE playlist, return list of videos
 ----------------
+
+### SEE 013_get_all_videos.Rmd
+*   retrieve ALL videos for ALL playlists
 
 pkg_yt_api/rmd/012_playlistitems.Rmd
 
@@ -26,8 +31,6 @@ knitr::opts_chunk$set(echo = TRUE,
 											comment="      ##",  
 											error=TRUE, 
 											collapse=TRUE)
-```
-```{r library, include=FALSE		}
 load_all()
 ```
 
@@ -153,7 +156,7 @@ t  <- videos %>% select(title, position) %>%
 
 ```
 
-```{r knit_exit()}
+```{r knit_exit(), eval=FALSE }
 knitr::knit_exit()
 ```
 

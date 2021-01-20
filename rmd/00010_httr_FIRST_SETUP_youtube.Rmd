@@ -12,15 +12,13 @@ geometry: margin=0.5in,top=0.25in
 ---
 
 
-SETUP !
+SETUP ! (begin here)
 - once auth.code is stored in Options() s/d not need to be here
-
-Troubleshooting
-HEAD shows what is being sent (see the simple error?)
-httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
+* For Troubleshooting
+*  HEAD shows what is being sent (see the simple error?)
+*  httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
  							query= query,
- 							config = config,
-							) 
+ 							config = config) 
 
 REF : 
 https://www.r-bloggers.com/2019/01/how-to-authenticate-using-oauth2-through-r-2/

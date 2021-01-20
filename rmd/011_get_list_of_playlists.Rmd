@@ -40,7 +40,7 @@ if (!exists("l"))   l    <- get_typical_values()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 ```
 
-Auth_code
+Auth_code (should not be NULL)
 ```{r get_auth_code}
 auth.code  <- getOption("auth.code")
 auth.code
@@ -124,11 +124,19 @@ while ( !is.null(httr::content(r)$nextPageToken )) {
 playlists
 ```
 
+### save playlists
 ```{r}
 saveRDS(playlists, file=here("data", "playlists.RDS"))
 ```
 
-post-processing
+### read playlists
+```{r readRDS}
+x  <- readRDS(here("data", "playlists.RDS"))
+x
+```
+
+
+### pretty the date.  
 ```{r}
 # google stores dates as ISO 8601, as string
 # why need TWO lubridate commands to retrieve simple date?

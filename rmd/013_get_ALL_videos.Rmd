@@ -1,0 +1,48 @@
+---
+title: "`r knitr::current_input()`"
+date: "`r paste('last updated', 
+    format(lubridate::now(), ' %d %B %Y'))`"
+output:   
+  html_document:  
+        code_folding: show
+        toc: true 
+        toc_depth: 2
+        toc_float: true
+  pdf_document:   
+    latex_engine: xelatex  
+    toc: true
+    toc_depth:  2   
+    fontsize: 11pt   
+    geometry: margin=0.5in,top=0.25in   
+---
+
+
+###  PLACE HOLDER
+###  FINISH 012_one-playist FIRST
+
+
+---- PURPOSE ----
+given ALL playlists, return complete list of videos
+----------------
+
+### SEE 013_get_all_videos.Rmd
+*   retrieve ALL videos for ALL playlists
+
+pkg_yt_api/rmd/012_playlistitems.Rmd
+
+
+```{r setup, include=FALSE		}
+knitr::opts_chunk$set(echo = TRUE,  
+											comment="      ##",  
+											error=TRUE, 
+											collapse=TRUE)
+load_all()
+```
+
+
+Retrieve previously stored playlists (see rmd/011_ ...)
+
+```{r readRDS}
+readRDS(here("data", "playlists.RDS"))
+```
+
