@@ -28,7 +28,6 @@ knitr::opts_chunk$set(echo = TRUE,
                       error = TRUE,
                       collapse = TRUE)
 load_all()
-library(httr)
 ```
 
 ## Initialization,  need only do once.
@@ -39,7 +38,7 @@ Endpoints
 
 # 1. Find OAuth settings for google:
 #    https://developers.google.com/accounts/docs/OAuth2InstalledApp
-oauth_endpoints("google")
+httr::oauth_endpoints("google")
 
 ```
   - Register myapp with Google
@@ -48,7 +47,7 @@ oauth_endpoints("google")
 # 2. Register an application at https://cloud.google.com/console#/project
 #    Replace key and secret below (use ~/.R_environ)
 #    NOTE:  google calls this key as "Client ID"
-myapp <- oauth_app("google",
+myapp <- httr::oauth_app("google",
   key  <- Sys.getenv("OAUTH2_ID"),
   secret  <- Sys.getenv("OAUTH2_SECRET")
 )
@@ -61,8 +60,8 @@ myapp
 
 Simplest Scope
 ```{r .httr-oauth}
-auth.code <- oauth2.0_token(
-              endpoint = oauth_endpoints("google"),
+auth.code <- httr::oauth2.0_token(
+              endpoint = httr::oauth_endpoints("google"),
               app = myapp,
               scope = "https://www.googleapis.com/auth/userinfo.profile")
 
@@ -112,8 +111,8 @@ str(content(req))
   - youtube.force-ssl needed to retrieve user's playists, videos in each
 ```{r youtube_scopes}
 # pop, asks users,  AND warns not verified, not safe
-auth.code <- oauth2.0_token(
-              endpoint = oauth_endpoints("google"),
+auth.code <- httr::oauth2.0_token(
+              endpoint = httr::oauth_endpoints("google"),
               app = myapp,
          scope = c("https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email",
