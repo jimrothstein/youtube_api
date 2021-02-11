@@ -1,5 +1,5 @@
 --- 
-title: Template for .Rmd 
+title: "`r knitr::current_input()`"
 date: "`r paste('last updated', 
     format(lubridate::now(), '%H:%M, %d %B %Y'))`"
 output: 
@@ -10,6 +10,8 @@ toc_depth:  1
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
 ---
+
+##  Test if token is valid
 
 
 SETUP ! (begin here)
@@ -29,6 +31,34 @@ knitr::opts_chunk$set(echo = TRUE,
                       collapse = TRUE)
 load_all()
 ```
+
+
+```{r Token, eval=FALSE   }
+# R6 object
+httr::Token
+
+```
+
+```{r caching}
+
+# .httr-oauth 
+file.exists(".httr-oauth")
+
+# options("httr_oauth_cache" = TRUE) 
+# was caching option ON?
+getOption("httr_oauth_cache")
+
+```
+
+```{r valid}
+
+```
+
+
+
+# =========
+## LEGACY
+# =========
 
 ## Initialization,  need only do once.
 ## Set up the token, .httr-oauth
@@ -60,10 +90,6 @@ myapp
 
 Simplest Scope
 ```{r .httr-oauth}
-# needed?
-# turn on httr:: caching
-base::options("httr_oauth_cache" = TRUE) 
-
 auth.code <- httr::oauth2.0_token(
               endpoint = httr::oauth_endpoints("google"),
               app = myapp,
@@ -138,133 +164,7 @@ KEY STEP  ...  save auth.code
 
 ```{r save_auth.code}
 auth.code
-
-
-# needed?
 base::options("auth.code" = auth.code)
 ```
 
 
-## Examples
-```{r one_video}
-
-# prep for GET
-if (!exists("api")) api <- get_api_codes()
-
-l <- get_typical_values()
-maxResults  <- l$maxResults
-playlistId  <- l$playlistId
-video_id = l$videoId
-base_url <- "https://www.googleapis.com/youtube/v3/videos"
-
-
-api_opts <- list(part = "snippet",
-                 id = video_id,
-                 maxResults = maxResults,
-                 fields="items(snippet(title))",
-                 key = api$api_key)
-
-
-# what is this?
-httr::modify_url(
-                       base_url, 
-                       query = api_opts, 
-                       config(token = auth.code))
-
-# WORKS!!!!
-r  <- GET(base_url, query = api_opts, config(token= auth.code))
-stop_for_status(r)
-httr::content(r)
-str(httr::content(r))
-```
-TODO - not working, missing , in list()  -- is it TRUE, TRUE?
-Given a channelId, returns total number of playlists
-```{r playlist_count}
-api <- get_api_codes()
-api
-
-base_url <- "https://www.googleapis.com/youtube/v3/playlists"
-
-
-query  <- list(
-						part="snippet, contentDetails",
-    				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
-            mine = TRUE, 
-						maxResults=3,
-						fields="pageInfo(totalResults)",
-						key = api$api_key
-						)
-
-r  <- httr::GET("https://www.googleapis.com/youtube/v3/playlists",
- 							query= query,
- 							config = httr::config(token = auth.code)
-							) %>% httr::stop_for_status()
-
-json_content  <- get_json(r)
-count  <- json_content$pageInfo$totalResults
-count
-#jr_get_total_playlists(query) #142
-
-
-# see HEAD?
-httr::HEAD("https://www.googleapis.com/youtube/v3/playlists",
- 							query= query,
- 							config = config(token=auth.code))
-```
-
-
-Comments
-```{r comments}
-
-api  <- get_api_codes()
-base_url <- "https://www.googleapis.com/youtube/v3/commentThreads"
-l <- get_typical_values()
-
-#playlistId  <- "PLbcglKxZP5PMZ7afIT7E2o9NwQIzqTI5l"
-
-# fields , careful if split on mutliple lines, use paste
-query  <- list(
-	part="snippet,replies", 
-	maxResults =l$maxResults, 
-	fields=paste(sep=", ", "nextPageToken", 
-			 "items(snippet(topLevelComment(snippet(videoId,textDisplay))))"
-			 ),
-	key = api$api_key, 
-	pageToken = NULL, 
-	videoId = l$videoId)
-
-# google_token = base::getOption("google_token") 
-# config  <- httr::config(google_token)
-
-```
-
-## 1st batch
-```{r get}
-
-r  <- GET(base_url, query = query, config(token= auth.code))
-stop_for_status(r)
-httr::content(r)
-str(httr::content(r))
-
-
-#comments  <- process_comments(r, comments)
-comments  <- jr_get_batch_comments(base_url, query, config) 
-comments
-```
-
-***
-
-```{r knit_exit()} 
-knitr::knit_exit()
-```
-
-/newpage
-
-```{r render, eval=FALSE	} 
-file <- ""
-file  <- basename(file)
-dir <- "rmd"
-
-jimTools::ren_pdf(file,dir)
-jimTools::ren_github(file, dir)
-```

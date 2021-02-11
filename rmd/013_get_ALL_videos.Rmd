@@ -42,7 +42,22 @@ load_all()
 
 Retrieve previously stored playlists (see rmd/011_ ...)
 
+### read playlists
 ```{r readRDS}
-readRDS(here("data", "playlists.RDS"))
+x  <- readRDS(here("data", "playlists.RDS"))
+x
 ```
 
+```{r begin}
+if (!exists("api")) api <- get_api_codes()
+if (!exists("l")) l  <- get_typical_values()
+base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
+```
+
+
+Auth_code
+```{r get_auth_code}
+old  <- auth.code
+auth.code  <- getOption("auth.code")
+auth.code
+```

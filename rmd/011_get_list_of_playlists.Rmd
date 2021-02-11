@@ -91,7 +91,7 @@ get_batch  <- function() {
   httr::stop_for_status()
 }
 ```
-From r, process comments
+From r, process playlists
 *  Helper function
 *  Process comments into tibblel
 *  Rbind with prior batches, return 
@@ -106,7 +106,7 @@ process_playlists  <- function(r, playlists = tibble::tibble()) {
 }
 ```
 ***
-```{r call }
+```{r first_batch }
 r  <- get_batch()
 playlists  <- process_playlists(r)
 playlists
