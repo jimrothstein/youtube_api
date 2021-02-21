@@ -30,23 +30,42 @@ knitr::opts_chunk$set(echo = TRUE,
                       error = TRUE,
                       collapse = TRUE)
 load_all()
+library(R6)
+```
+
 ```
 
 
 ```{r Token, eval=FALSE   }
-# R6 object
-httr::Token
-
-```
-
-```{r caching}
+# are we caching?
+getOption("httr_oauth_cache")
 
 # .httr-oauth 
 file.exists(".httr-oauth")
 
-# options("httr_oauth_cache" = TRUE) 
-# was caching option ON?
-getOption("httr_oauth_cache")
+# get auth.cod
+x  <- getOption("auth.code")
+x
+```
+
+R6  
+see https://httr.r-lib.org/reference/Token-class.html
+```{r caching}
+ans  <- x$validate()
+ans
+
+# print method
+x$print()
+
+# a field
+x$endpoint
+
+# app field
+x$app
+
+# token info (including scope)
+names(x$credentials)
+x$credentials
 
 ```
 

@@ -58,10 +58,28 @@ myapp
   - Create .httr-oauth (binary) in project root.
   - Best to run in xiwi -T st  b/c need X11 for user to approve
 
+##  SCOPE 3 (BEST)
+  - USE THIS auth.code for most work
+  - must be in X11  
+  - Add scope for various youtube access.
+  - youtube.force-ssl needed to retrieve user's playists, videos in each
+```{r youtube_scopes}
+# pop, asks users,  AND warns not verified, not safe
+auth.code <- httr::oauth2.0_token(
+              endpoint = httr::oauth_endpoints("google"),
+              app = myapp,
+         scope = c("https://www.googleapis.com/auth/userinfo.profile",
+                "https://www.googleapis.com/auth/userinfo.email",
+                "https://www.googleapis.com/auth/youtube",  # manage
+"https://www.googleapis.com/auth/youtube.readonly",
+"https://www.googleapis.com/auth/youtube.force-ssl"
+         )
+)
+
+```
 Simplest Scope
 ```{r .httr-oauth}
-# needed?
-# turn on httr:: caching
+# Be sure:  turn on httr:: caching
 base::options("httr_oauth_cache" = TRUE) 
 
 auth.code <- httr::oauth2.0_token(
@@ -112,36 +130,20 @@ stop_for_status(req)
 str(content(req))
 ```
 
-##  SCOPE 3 (BEST)
-  - USE THIS auth.code for most work
-  - must be in X11  
-  - Add scope for various youtube access.
-  - youtube.force-ssl needed to retrieve user's playists, videos in each
-```{r youtube_scopes}
-# pop, asks users,  AND warns not verified, not safe
-auth.code <- httr::oauth2.0_token(
-              endpoint = httr::oauth_endpoints("google"),
-              app = myapp,
-         scope = c("https://www.googleapis.com/auth/userinfo.profile",
-                "https://www.googleapis.com/auth/userinfo.email",
-                "https://www.googleapis.com/auth/youtube",  # manage
-"https://www.googleapis.com/auth/youtube.readonly",
-"https://www.googleapis.com/auth/youtube.force-ssl"
-         )
-)
 
-```
-
-KEY STEP  ...  save auth.code
+## KEY STEP  ...  save auth.code
 -  later retrieve getOption("auth.code")
 -  NOTE:  auth.code should not be NULL
 
 ```{r save_auth.code}
 auth.code
 
-
-# needed?
+# need?
 base::options("auth.code" = auth.code)
+
+# check
+x  <- getOption("auth.code")
+x
 ```
 
 
