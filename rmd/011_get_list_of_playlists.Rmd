@@ -17,7 +17,8 @@ geometry: margin=0.5in,top=0.25in
 /home/jim/code/pkg_yt_api/exclude/011_playlists.Rmd
 
 ---- PURPOSE ----
-given a channel_id , return list of all playlists
+given a channel_id , return list of all playlists and save
+
 ----------------
 ```{r setup, include=FALSE		}
 knitr::opts_chunk$set(echo = TRUE,  
@@ -27,13 +28,6 @@ knitr::opts_chunk$set(echo = TRUE,
 load_all()
 ```
 
-```{r render, eval=FALSE	}
-here()
-file <- "011_playlists.Rmd"
-file  <- basename(file)
-dir="rmd"
-
-```
 ```{r initialize}
 if (!exists("api")) api  <- get_api_codes()
 if (!exists("l"))   l    <- get_typical_values()
@@ -46,12 +40,10 @@ auth.code  <- getOption("auth.code")
 auth.code
 ```
 
-```{r get_count_playlists}
-
-```
 
 
 TODO - not returning nextPageToken (actually, it is, just toofwe playlists!)
+## Build query
 ```{r query}
 query  <- NULL
 query  <- list( 
@@ -105,7 +97,11 @@ process_playlists  <- function(r, playlists = tibble::tibble()) {
   playlists <- rbind(playlists, next_playlists)
 }
 ```
-***
+
+
+## get_batch()
+SCOPE?  auth_token?   Something fails with auth token
+# expect > 100 playlists
 ```{r first_batch }
 r  <- get_batch()
 playlists  <- process_playlists(r)
@@ -125,6 +121,7 @@ playlists
 ```
 
 ### save playlists
+##  BE SURE data/ exists!
 ```{r}
 saveRDS(playlists, file=here("data", "playlists.RDS"))
 ```

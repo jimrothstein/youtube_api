@@ -42,7 +42,7 @@ load_all()
 
 Retrieve previously stored playlists (see rmd/011_ ...)
 
-### read playlists
+### read playlists (previously downloaded)
 ```{r readRDS}
 x  <- readRDS(here("data", "playlists.RDS"))
 x

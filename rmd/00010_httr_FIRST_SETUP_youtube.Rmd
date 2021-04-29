@@ -68,16 +68,18 @@ myapp
 auth.code <- httr::oauth2.0_token(
               endpoint = httr::oauth_endpoints("google"),
               app = myapp,
-         scope = c("https://www.googleapis.com/auth/userinfo.profile",
+              scope = 
+                c("https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email",
                 "https://www.googleapis.com/auth/youtube",  # manage
-"https://www.googleapis.com/auth/youtube.readonly",
-"https://www.googleapis.com/auth/youtube.force-ssl"
+                "https://www.googleapis.com/auth/youtube.readonly",
+                "https://www.googleapis.com/auth/youtube.force-ssl"
          )
 )
 
 ```
 Simplest Scope
+
 ```{r .httr-oauth}
 # Be sure:  turn on httr:: caching
 base::options("httr_oauth_cache" = TRUE) 
@@ -96,17 +98,17 @@ See 011_httr_check_valid_token.Rmd
 now use GET, Works
 ```{r use_api}
 # 4. Use API (auto-refreshs a stale OAuth token)
-req <- GET(
+req <- httr::GET(
   "https://www.googleapis.com/oauth2/v1/userinfo",
-  config(token = auth.code) )
+  httr::config(token = auth.code) )
 
-stop_for_status(req)
-str(content(req))
+httr::stop_for_status(req)
+str(httr::content(req))
 
 # show header
 httr::HEAD(
   "https://www.googleapis.com/oauth2/v1/userinfo",
-  config(token = auth.code) 
+  httr::config(token = auth.code) 
 )
 ```
 
@@ -121,24 +123,25 @@ auth.code <- oauth2.0_token(
 )
 
 # same request (but token has changed!)
-req <- GET(
+req <- httr::GET(
   "https://www.googleapis.com/oauth2/v1/userinfo",
-  config(token = auth.code) )
+  httr::config(token = auth.code) )
 
-stop_for_status(req)
+httr::stop_for_status(req)
 # email appears!
-str(content(req))
+str(httr::content(req))
 ```
 
 
 ## KEY STEP  ...  save auth.code
 -  later retrieve getOption("auth.code")
 -  NOTE:  auth.code should not be NULL
+-  
 
 ```{r save_auth.code}
 auth.code
 
-# need?
+# need? (I think so)
 base::options("auth.code" = auth.code)
 
 # check
@@ -179,6 +182,7 @@ stop_for_status(r)
 httr::content(r)
 str(httr::content(r))
 ```
+
 TODO - not working, missing , in list()  -- is it TRUE, TRUE?
 Given a channelId, returns total number of playlists
 ```{r playlist_count}
@@ -187,7 +191,7 @@ api
 
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
 
-
+# mine =  ????
 query  <- list(
 						part="snippet, contentDetails",
     				channel_id="UClB5qWyXejlAwwkDAzJis-Q",
@@ -260,7 +264,7 @@ comments
 knitr::knit_exit()
 ```
 
-/newpage
+\newpage
 
 ```{r render, eval=FALSE	} 
 file <- ""

@@ -26,6 +26,7 @@ load_all()
 
 
 ```{r begin}
+#  docs:  https://developers.google.com/youtube/v3/docs/playlists
 api <- get_api_codes()
 if (!exists("l")) l  <- get_typical_values()
 base_url <- "https://www.googleapis.com/youtube/v3/playlists"
@@ -39,8 +40,11 @@ auth.code  <- getOption("auth.code")
 auth.code
 ```
 
-TODO - count = 16 is wrong!
+## get_playlists_count()
 ```{r get_count}
+#'  @title get_playlists_count
+#'  @description Given query (with channelId), return the number of playlists
+
 query  <- list(
   part="snippet",
  	channelId="UClB5qWyXejlAwwkDAzJis-Q",
@@ -55,12 +59,12 @@ r  <- httr::GET(url = base_url,
  							config = httr::config(token = auth.code)
 							)
 
-
+r
 httr::stop_for_status(r)
 
 json_content  <- get_json(r)
 count  <- json_content$pageInfo$totalResults
-count #16 is too low
+count #  ~157,  16 is too low
 
 ```
 

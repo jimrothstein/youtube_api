@@ -31,13 +31,6 @@ knitr::opts_chunk$set(
 library(jimTools)
 ```
 
-```{r render, eval=FALSE	}
-here()
-file <- "/home/jim/code/r_rafael/rmd/005_linear_algebra_examples.Rmd"
-file  <- basename(file)
-dir="rmd"
-
-```
 
 ```{r api}
 if (!exists("api")) api <- get_api_codes()
