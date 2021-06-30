@@ -18,145 +18,131 @@ output:
 
 ---- PURPOSE ----
 given ONE playlist, return list of videos
-HERE:  re-write so get_videos(playlist) return all videos in ONE playlist
 ----------------
 
 ### SEE 013_get_all_videos.Rmd
 *   retrieve ALL videos for ALL playlists
 
-
-
 ```{r setup, include=FALSE		}
-knitr::opts_chunk$set(echo = TRUE,  
-											comment="      ##",  
-											error=TRUE, 
-											collapse=TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      comment="      ##",  
+                      error=TRUE, 
+                      collapse=TRUE)
 load_all()
 ```
 
 ```{r initialize}
+initialize <- function() {
+
+  auth.code  <- readRDS(here("saved_auth_code"))
+
+  # prep for GET
+  if (!exists("api")) api <- get_api_codes()
+
+  if (!exists("l")) l <- get_typical_values()
+
+  base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
+
+  r  <- structure(list(auth.code = auth.code,
+                       base_url = base_url,
+                       api = api,
+                       l = l)
+
+  )
+  
+}
 ```
-## Functions
 
 ### get_query()
 ```{r query}
-
-# return query
+# return query, run only once
 get_query  <- function(playlistId, api, l) {
     query  <- list(
-                   part="snippet",  
-                   maxResults=l$maxResults,  
-        playlistId= l$playlistId,	
-        fields=paste(sep=", ",   
-          "nextPageToken",   
-          "items(snippet(title, description, position ))"  
-          ),  
-        key=api$api_key)  
+                    part="snippet",  
+                    maxResults=l$maxResults,  
+                    playlistId= l$playlistId,	
+                    fields=paste(
+                            sep=", ",   
+                           "nextPageToken",   
+                           "items(snippet(title, description, position ))"  
+                        ),  
+                    key=api$api_key
+    )  
 }
 
-```
-### check with HEAD
-```{r check}
 
-## check against HEAD
+
+```
+
+### check against HEAD
 ```{r}
+# TODO  - how to check?
 r  <- httr::HEAD(url =  base_url,
                 query = query,
-                config = httr::config(token = auth.code))
+                config = config 
+                )
 
 r
 ```
 
 ### process_batch()
 ```{r process}
-
-
-
-# return videos tibble
-process_batch  <- function(r, videos){
-	json_content <- get_json(r)
-	next_videos <- json_content$items$snippet
-  nextPageToken  <<- httr::config(token = auth.code)
-	videos <- rbind(videos, next_videos)
+# Given an r, extract the videos and nextPageToken (as list) 
+process_batch <- function(r) {
+  json_content <- get_json(r)
+  videos <- json_content$items$snippet
+  nextPageToken <- json_content$nextPageToken
+  list(
+    nextPageToken = nextPageToken,
+    videos = videos
+  )
 }
 
 ```
 
-## Run  Query
-```{r}
-r  <- httr::GET(url =  base_url,
-                query = query,
-                config = httr::config(token = auth.code))
-
-r
-```
-
-### get_first_batch_videos
-```{r first_batch}
-
-get_first_batch_videos  <- function(playlistId){ 
-  query  <- get_query(playlistId, api, l)
-
-  r  <- httr::GET(url =  base_url,
-                query = query,
-                config = httr::config(token = auth.code))
-  nextPageToken   <<- httr::content(r)$nextPageToken
-  videos  <- process_batch(r, videos)
-}
-
-```
-
-### get_next_batch
+### get_next_batch_videos
 ```{r next_batch}
 
 get_next_batch_videos   <- function(base_url, query, config) {
-      query  <- get_query(playlistId, api, l)
-      query$nextPageToken  <- nextPageToken
-      
-      r  <- httr::GET(url =  base_url,
-                query = query,
-                config = httr::config(token = auth.code))
+      r  <- httr::GET(url =  base_url, 
+                      query = query, 
+                      config = config)
 
 			# process
-      videos  <- process_batch(r, videos)
+      l <- process_batch(r)
 }
 
 ```
 
 combine 1st batch + additional (if any)
 ```{r all_videos_ONE_playlist}
+get_playlist_videos <- function(playlistId) {
+  r  <- initialize()
+  api = r$api
+  l  <- r$l
+  auth.code  <- r$auth.code
+  base_url  <- r$base_url
 
+  query  <- get_query(playlistId, api, l)
+  config  <- config  <-  httr::config(token = auth.code)
 
+  # run 1st time (may refresh stale token)
+  l <- get_next_batch_videos(base_url, query, config)
+  videos <- l$videos
+  nextPageToken <- l$nextPageToken
 
-# all togther!
-get_playlist_videos  <- function(playlistId){
-  browser()
-  videos  <- NULL
-  nextPageToken  <- NULL
-  auth.code  <- getOption("auth.code")
-  auth.code
-
-  videos  <- get_first_batch_videos(playlistId)
+  while (!is.null(nextPageToken)) {
+    query$pageToken <- nextPageToken
+    l <- get_next_batch_videos(base_url, query, config)
+    videos <- rbind(videos, l$videos)
+    nextPageToken <- l$nextPageToken
+  }
   videos
-
-  
-  while (!is.null(nextPageToken))
-			 query$pageToken  <- nextPageToken 
-       r  <- get_next_batch_videos (base_url, query, config)
-       videos  <- process_batch(r, videos)
 }
+playlistId  <- "PLbcglKxZP5PMU2rNPBpYIzLTgzd5aOHw2"
+videos  <- get_playlist_videos(playlistId)
+head(videos, 2)
 
-if (!exists("api")) api <- get_api_codes()
-if (!exists("l")) l   <- get_typical_values()
-api
-l
-
-base_url <- "https://www.googleapis.com/youtube/v3/playlistItems"
-
-if (is.null(l$playlistId)) l$playlistId <- "PLbcglKxZP5PN07Vw-0ukcDJCxFGY2Crgc"
-
-l$playlistId
-get_playlist_videos( l$playlistId)
 ```
 
 
@@ -169,15 +155,12 @@ saveRDS(videos, file=here::here("data/videos.RDS"))
 ```
 cleanup videos
 ```{r cleanup}
-t  <- videos %>% select(title, position) %>% 
+t  <- videos %>% dplyr::select(title, position) %>% 
 	dplyr::arrange(title)
-
+t
+str(t)
 ```
 
-```{r knit_exit(), eval=FALSE }
-knitr::knit_exit()
-```
-gg
 ```{r render, eval=FALSE	}
 here()
 file <- "rmd/012_get_videos.Rmd"

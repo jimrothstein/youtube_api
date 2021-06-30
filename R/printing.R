@@ -15,3 +15,12 @@ rmarkdown::render(
 									output_dir="~/Downloads/print_and_delete") 
 }
 # ren_github(file, dir)
+#
+#
+#
+
+
+
+#'  @title this_is_junk()
+#'  @description \code{this_is_junk} is ery important function.
+this_is_junk  <- function() { T}

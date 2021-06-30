@@ -124,24 +124,6 @@ saveRDS(comments, file=here("data","comments.RDS"))
 
 
 
-```{r trick_tibble, eval=FALSE  , include=FALSE }
-
-# Observe,  rind (A, B)
-# A is empty tibble,
-# B is tibble
-# Then rbind success and returns combined
-
-comments  <- tibble::tibble()
-comments
-new_comments  <- tibble::tribble(
-                         ~x, ~y,
-                         1, 0,
-                         0, 1)
-
-z   <- rbind(comments, new_comments)
-z
-x
-```
 
 
 ```{r render, eval=FALSE, include=FALSE 	} 

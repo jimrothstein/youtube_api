@@ -9,6 +9,7 @@ toc: TRUE
 toc_depth:  1 
 fontsize: 12pt 
 geometry: margin=0.5in,top=0.25in 
+TAGS:  httr,
 ---
 
 
@@ -36,11 +37,15 @@ load_all()
 Endpoints
 ```{r endpoints}
 
+# 0.  Be sure:  turn on httr:: caching | token will know to be stored n
+#     .httr_oath_cache"  (when created)
+base::options("httr_oauth_cache" = TRUE) 
+
 # 1. Find OAuth settings for google:
 #    https://developers.google.com/accounts/docs/OAuth2InstalledApp
 httr::oauth_endpoints("google")
-
 ```
+
   - Register myapp with Google
   - Uncomment if want to see
 ```{r register}
@@ -65,9 +70,12 @@ myapp
   - youtube.force-ssl needed to retrieve user's playists, videos in each
 ```{r youtube_scopes}
 # pop, asks users,  AND warns not verified, not safe
+# if option("httr_oauth_cache") was set to TRUE , token will then know to store
+# in .httr-oauth
 auth.code <- httr::oauth2.0_token(
               endpoint = httr::oauth_endpoints("google"),
               app = myapp,
+              cache = getOption("httr_oauth_cache"),
               scope = 
                 c("https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email",
@@ -77,13 +85,26 @@ auth.code <- httr::oauth2.0_token(
          )
 )
 
+auth.code
+```
+## KEY STEP  ...  save auth.code
+  -  saveRDS vs save
+  -  saveRDS is  lower level; one object only
+  -  save can save several objects
+-  NOTE:  auth.code should not be NULL
+
+```{r save_auth.code}
+saveRDS(auth.code, here("saved_auth_code"))
+x  <- readRDS(here("saved_auth_code"))
+identical(x, auth.code) #FALSE??
+
+knitr::knit_exit()
 ```
 Simplest Scope
 
 ```{r .httr-oauth}
-# Be sure:  turn on httr:: caching
-base::options("httr_oauth_cache" = TRUE) 
 
+# sometimes this pops  up, too.
 auth.code <- httr::oauth2.0_token(
               endpoint = httr::oauth_endpoints("google"),
               app = myapp,
@@ -105,18 +126,22 @@ req <- httr::GET(
 httr::stop_for_status(req)
 str(httr::content(req))
 
-# show header
-httr::HEAD(
+# show header, why ERROR?
+req  <- httr::HEAD(
   "https://www.googleapis.com/oauth2/v1/userinfo",
   httr::config(token = auth.code) 
+
+httr::stop_for_status(req)
+str(httr::content(req))
+
 )
 ```
 
 ## SCOPE 2  
   - Need broader scope to access email
 ```{r get_email}
-auth.code <- oauth2.0_token(
-              endpoint = oauth_endpoints("google"),
+auth.code <- httr::oauth2.0_token(
+              endpoint = httr::oauth_endpoints("google"),
               app = myapp,
          scope = c("https://www.googleapis.com/auth/userinfo.profile",
                 "https://www.googleapis.com/auth/userinfo.email")
@@ -133,21 +158,6 @@ str(httr::content(req))
 ```
 
 
-## KEY STEP  ...  save auth.code
--  later retrieve getOption("auth.code")
--  NOTE:  auth.code should not be NULL
--  
-
-```{r save_auth.code}
-auth.code
-
-# need? (I think so)
-base::options("auth.code" = auth.code)
-
-# check
-x  <- getOption("auth.code")
-x
-```
 
 
 ## Examples
@@ -174,11 +184,11 @@ api_opts <- list(part = "snippet",
 httr::modify_url(
                        base_url, 
                        query = api_opts, 
-                       config(token = auth.code))
+                       httr::config(token = auth.code))
 
 # WORKS!!!!
-r  <- GET(base_url, query = api_opts, config(token= auth.code))
-stop_for_status(r)
+r  <- httr::GET(base_url, query = api_opts, httr::config(token= auth.code))
+httr::stop_for_status(r)
 httr::content(r)
 str(httr::content(r))
 ```
@@ -247,7 +257,7 @@ query  <- list(
 ## 1st batch
 ```{r get}
 
-r  <- GET(base_url, query = query, config(token= auth.code))
+r  <- httr::GET(base_url, query = query, httr::config(token= auth.code))
 stop_for_status(r)
 httr::content(r)
 str(httr::content(r))

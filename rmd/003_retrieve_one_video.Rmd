@@ -41,12 +41,17 @@ if (!exists("api")) api <- get_api_codes()
 # don't want to keep typing this
 
 l <- get_typical_values()
-
+{
   maxResults  <- l$maxResults
   playlistId  <- l$playlistId
   video_id = l$videoId
 
+}
 base_url <- "https://www.googleapis.com/youtube/v3/videos"
+```
+
+```{r}
+this_is_junk()
 ```
 
 ```{r}
